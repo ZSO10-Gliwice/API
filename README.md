@@ -1,4 +1,5 @@
-# Web
-Backend i frontend webowy dla ZSO10 App
-
+# ZSO10 App – Web
 Web frontend and backend for ZSO10 App
+
+## Language note
+All documentation for entire ZSO10 App project is written in English for convenience
