@@ -12,8 +12,8 @@ exist in different languages, but English is mandatory. Language code should be
 included in file name, for example:
     - README.md – default, English file
     - README-pl.md – additional, Polish file
-2. If it's possible and reasonable, 100 character marprgin should be preserved in
-all files.
+2. If it's possible and reasonable, 100 character margin should be preserved in
+all files. In code files comments can exceed this limit.
 3. I (@MarPiRK) prefer Java-like braces and 4-space indents:
 ````
 if (true) {

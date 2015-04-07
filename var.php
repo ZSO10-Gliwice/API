@@ -1,7 +1,6 @@
 <?php
-
 /* 
- * Variables include file
+ * General variables include file
  * 
  * Copyleft (ↄ) 2015 Marek Pikuła
  *
@@ -24,5 +23,5 @@ define("BASE_DIR", __DIR__);
 //Versions
 define("VERSION_APP_ANDROID", "0.0.1"); //Current version of Android app
 
-//XML Header
+//XML Header – API is using XML as output format
 define("XML_HEADER", '<?xml version="1.0" encoding="UTF-8"?>');

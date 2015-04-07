@@ -20,7 +20,7 @@
  */
 
 //Version
-define("VERSION_API", "0.0.1");         //API current version
+define("VERSION_API", "0.0.1"); //API current version
 
 //Errors
 require_once BASE_DIR . '/lib/enum.php';

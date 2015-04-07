@@ -1,7 +1,9 @@
 <?php
-
 /* 
- * Main API file
+ * Main API interface
+ * 
+ * All attributes are handled as GET request. Each module is included from
+ * different file under "api" directory.
  * 
  * Copyleft (ↄ) 2015 Marek Pikuła
  *
@@ -22,32 +24,38 @@
 require_once 'var.php';
 require_once BASE_DIR . '/api/var.php';
 
-echo XML_HEADER . XML_API_OPEN;
+echo XML_HEADER . XML_API_OPEN; //introduction to client
 
+//check for client attribute
 if (!filter_input(INPUT_GET, 'client')) {
     error(APIError::client, false);
 } else {
+    //check if client is valid
     if (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0) {
         error(APIError::client, true);
     }
 }
 
+//check for version attribute
 if (!filter_input(INPUT_GET, 'version')) {
     error(APIError::version, false);
-} else {
-    if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)
+} else if (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0) {       //beta version is unstable, so any API inconsistance is user fault
+    //check if client version is up to date
+    if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
             && (filter_input(INPUT_GET, 'version') != VERSION_APP_ANDROID)) {
         error(APIError::version, true, 'current="' . VERSION_APP_ANDROID . '"');
     }
 }
 
+//check for module attribute
 if (!filter_input(INPUT_GET, 'module')) {
     error(APIError::module, false);
 } else {
+    //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
-        case "lucky": require 'api/lucky.php'; break;
+        case "lucky": include 'api/lucky.php'; break;
 
-        default: error(APIError::module, true); break;
+        default: error(APIError::module, true); break;  //error if module name was not found
     }
 }
 

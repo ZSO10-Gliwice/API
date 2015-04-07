@@ -1,5 +1,4 @@
 <?php
-
 /* 
  * Lucky Numbers API
  * 
@@ -19,3 +18,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//TODO after making server generator

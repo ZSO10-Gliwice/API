@@ -13,7 +13,7 @@ Do nazw plików powinien być dołączony kod języka, np.:
     - README.md – domyślna, angielska wersja
     - README-pl.md – dodatkowa, polska wersja
 2. Jeżeli to możliwe i rozsądne, powinien zostać zachowany 100-znakowy margines
-dla wszystkich plików.
+dla wszystkich plików. W plikach źródłowych można go przekroczyć dla komentarzy.
 3. Ja (@MarPiRK) preferuję Javowe nawiasy i 4-spacjowe wcięcia:
 ````
 if (true) {
