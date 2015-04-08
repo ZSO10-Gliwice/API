@@ -1,5 +1,6 @@
 <?php
-/* 
+
+/*
  * Lucky Numbers API
  * 
  * Copyleft (ↄ) 2015 Marek Pikuła
@@ -18,4 +19,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO after making server generator
+//TORETHINK after making server side generator – it basically ok, but some
+//          things may change
+//TODEBUG
+
+$query = 'SELECT * FROM ' . \Config\DB::table_prefix . 'lucky';
+
+//used for range based select
+$range = false;
+if (check_attrib('range', false)) {
+    $range = filter_input(INPUT_GET, 'range');
+}
+
+//validate if given date is in right format to prevent from SQL injection
+//date should be in format 'Y-m-d'
+function validate_date($date) {
+    $date_arr = explode('-', $date);
+    if (count($date_arr) != 3 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
+        end_error('date', true, 'Wrong date format');
+    }
+    return $date;
+}
+
+$from_date;
+$to_date;
+if ($range) {
+    if (check_attrib('date', false)) {                          //present for range from 'date' to now
+        $from_date = validate_date(filter_input(INPUT_GET, 'date'));
+        $to_date = $today->format('Y-m-d');
+    } else if (check_attrib('date1') && check_attrib('date2')) {//present for range from 'date1' to 'date2'
+        $from_date = validate_date(filter_input(INPUT_GET, 'date1'));
+        $to_date = validate_date(filter_input(INPUT_GET, 'date2'));
+    } else {
+        end_error('date', false, 'No date or date1/date2 for date range');
+    }
+} else if (check_attrib('date', false) && !$range) {  //filter exact date
+    $query += ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
+}
+
+$result = mysqli_query($dblink, $query) or db_error($dblink);
+
+while ($row = mysqli_fetch_assoc($result)) {
+    //I assume, that server is inserting dates in order
+    if ($range) {
+        if ($row['date'] < $from_date) {
+            continue;
+        } else if ($row['date'] > $to_date) {
+            break;
+        }
+    }
+    echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
+}

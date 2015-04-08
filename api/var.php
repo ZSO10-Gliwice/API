@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * Variables for API
  * 
  * Copyleft (ↄ) 2015 Marek Pikuła
@@ -20,20 +20,32 @@
  */
 
 //Version
-define("VERSION_API", "0.0.1"); //API current version
+define('VERSION_API', '0.0.1'); //API current version
 
 //Errors
-require_once BASE_DIR . '/lib/enum.php';
+
+require_once BASE_DIR . 'lib/enum.php';
+
+//enum static class for defining error codes
+//mainly used for GET attributes
 abstract class APIError extends BasicEnum {
+    const db = 0;       //database error
     const client = 1;
     const version = 2;
     const module = 3;
+    const date = 4;
 }
 
-function error($name, $exists, $arg = '', $msg = '') {
-    echo '<error id="' . APIError::getValue($name) . ($arg == '' ? "" : " " . $arg) . '">';
-    
+//write XML error
+function error($name, $exists, $msg = '', $arg = '') {
+    echo '<error id="' . APIError::getValue($name) . '"';
+    if ($arg != '') {   //additional argument for error tag
+        echo ' ' . $arg;
+    }
+    echo '>';
+
     if ($msg == '') {
+        //default message is for attributes handling
         if ($exists) {
             echo 'Invalid ' . $name;
         } else {
@@ -42,20 +54,39 @@ function error($name, $exists, $arg = '', $msg = '') {
     } else {
         echo $msg;
     }
-    
+
     echo '</error>';
 }
 
-//Check if attribute exists and if not throw error
-function check_attrib($name) {
+//write XML error and end document
+function end_error($name, $exists, $msg = '', $arg = '') {
+    error($name, $exists, $msg, $arg);
+    end();
+}
+
+//write XML error from mysqli_error and exit
+function db_error($dblink) {
+    end_error('db', false, mysqli_error($dblink));
+}
+
+//Check if attribute exists and if not - write error
+function check_attrib($name, $exec_error = true) {
     if (filter_input(INPUT_GET, $name)) {
         return true;
     } else {
-        error($name, false);
+        if ($exec_error) {
+            error($name, false);
+        }
         return false;
     }
 }
 
-//XML
-define("XML_API_OPEN", '<api version="' . VERSION_API . '">');
-define("XML_API_CLOSE", '</api>');
+//XML tags consts
+define('XML_API_OPEN', '<api version="' . VERSION_API . '">');
+define('XML_API_CLOSE', '</api>');
+
+//end XML document and exit
+function end() {
+    echo XML_API_CLOSE;
+    exit();
+}

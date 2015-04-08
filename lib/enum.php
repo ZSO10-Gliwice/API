@@ -1,5 +1,6 @@
 <?php
-/* 
+
+/*
  * Basic enum support
  * 
  * Copyleft (ↄ) 2015 Marek Pikuła
@@ -49,9 +50,9 @@ abstract class BasicEnum {
         $values = array_values(self::getConstants());
         return in_array($value, $values, $strict = true);
     }
-    
+
     public static function getName($value) {
-    	$constants = self::getConstants();
+        $constants = self::getConstants();
 
         foreach ($constants as $name => $v) {
             if ($v == $value) {
@@ -59,9 +60,9 @@ abstract class BasicEnum {
             }
         }
 
-    	return NULL;
+        return NULL;
     }
-    
+
     public static function getValue($name) {
         $constants = self::getConstants();
 
@@ -71,6 +72,7 @@ abstract class BasicEnum {
             }
         }
 
-    	return NULL;
+        return NULL;
     }
+
 }

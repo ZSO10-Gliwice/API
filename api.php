@@ -1,5 +1,6 @@
 <?php
-/* 
+
+/*
  * Main API interface
  * 
  * All attributes are handled as GET request. Each module is included from
@@ -22,7 +23,8 @@
  */
 
 require_once 'var.php';
-require_once BASE_DIR . '/api/var.php';
+require_once BASE_DIR . 'api/var.php';
+require_once BASE_DIR . 'config.php';   //for DB config
 
 echo XML_HEADER . XML_API_OPEN; //introduction to client
 
@@ -36,15 +38,23 @@ if ((check_attrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'),
     //check if client version is up to date
     if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
             && (filter_input(INPUT_GET, 'version') != VERSION_APP_ANDROID)) {
-        error(APIError::version, true, 'current="' . VERSION_APP_ANDROID . '"');
+        error(APIError::version, true, '', 'current="' . VERSION_APP_ANDROID . '"');
     }
 }
+
+//db handler is required for submodules
+$dblink = mysqli_connect(\Config\DB::host, \Config\DB::user, \Config\DB::password);
+if (!$dblink) {
+    db_error($dblink);
+}
+
+mysqli_select_db($dblink, 'my_database') or db_error($dblink);
 
 //check for module attribute
 if (check_attrib('module')) {
     //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
-        case "lucky": include 'api/lucky.php'; break;
+        case "lucky": include BASE_DIR . 'api/lucky.php'; break;
 
         default: error(APIError::module, true); break;  //error if module name was not found
     }

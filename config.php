@@ -1,7 +1,6 @@
 <?php
-/* 
- * General variables include file
- * 
+
+/*
  * Copyleft (ↄ) 2015 Marek Pikuła
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,10 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('BASE_DIR', __DIR__ . '/');
+namespace Config {
 
-//Versions
-define('VERSION_APP_ANDROID', '0.0.1'); //Current version of Android app
+    abstract class DB {
 
-//XML Header – API is using XML as output format
-define('XML_HEADER', '<?xml version="1.0" encoding="UTF-8"?>');
+        const host = 'localhost';
+        const user = 'zso10app';
+        const password = 'fsadpass1029';
+        const database = 'zso10app';
+        const table_prefix = 'app_';
+
+    }
+
+}

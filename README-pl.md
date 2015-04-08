@@ -14,12 +14,14 @@ Do nazw plików powinien być dołączony kod języka, np.:
     - README-pl.md – dodatkowa, polska wersja
 2. Jeżeli to możliwe i rozsądne, powinien zostać zachowany 100-znakowy margines
 dla wszystkich plików. W plikach źródłowych można go przekroczyć dla komentarzy.
-3. Ja (@MarPiRK) preferuję Javowe nawiasy i 4-spacjowe wcięcia:
-````
-if (true) {
-    foo();
-}
-````
+3. Zasady formatowania kodu:
+    - Javowe nawiasy i 4-spacjowe wcięcia:
+      ````
+      if (true) {
+          foo();
+      }
+      ````
+    - pojedynczy cudzysłówn dla tekstów PHP, podwójny cudzysłów dla XML/SQL
 4. Kod tego projektu jest tworzony również w celach naukowych. Z tego powodu
 proszę umieszczać pełną dokumentację i komentarze w celu polepszenia
 zrozumiałości kodu.
