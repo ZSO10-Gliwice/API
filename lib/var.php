@@ -45,26 +45,30 @@ abstract class APIError extends BasicEnum {
     const attrNotValid  = 5; //attribute not valid
     const nothing       = 6; //nothing to show
     
-    static private function getDefaultMessage($id) {
+    //it's not end-user exposed so there's no need to translate these messages
+    static private function getDefaultMessage($id, $attribs = array()) {
         switch ($id) {
             case APIError::runtime: return 'Runtime error! This should never'
                                             . 'happen! Get in touch with'
                                             . 'developers.';
             case APIError::db:      return 'Database error';
             case APIError::parse:   return 'Parse error';
-            case APIError::noAttr:  return 'Attribute not found';
-            case APIError::attrNotValid: return 'Attribute not valid';
+            case APIError::noAttr:  return 'Attribute "' . $attribs['attribute'] . '" not found';
+            case APIError::attrNotValid:
+                $msg = 'Attribute "' . $attribs['attribute'] . '" not valid';
+                if (array_key_exists('valid', $attribs)) { //yeah too many nested, but making awful oneliner would be worse
+                    $msg .= ' (valid value: "' . $attribs['valid'] . '")';
+                }
+                return $msg;
             case APIError::nothing: return 'Nothing to show';
             
             default: return 'Unknown error';
         }
     }
     
-    static private function validateArgumentsArray($id, $arr) {
-        foreach ($arr as $name => $value) {
-            if ($name == 'id') {
-                APIError::errorRuntimeError($id, false, 'id');
-            }
+    static private function validateAttributesArray($id, $arr) {
+        if (array_key_exists('id', $arr)) {
+            APIError::errorRuntimeError($id, false, 'id');
         }
         
         if (($id == APIError::db) && (!array_key_exists('db_errno', $arr))) {
@@ -74,32 +78,21 @@ abstract class APIError extends BasicEnum {
             APIError::errorRuntimeError($id, true, 'attribute');
         } else if (!APIError::isValidValue($id)) {
             APIError::runtimeError('Unknown error id: ' . $id,
-                                         array('error_id' => $id));
+                                    array('error_id' => $id));
         }
     }
     
-    //it's not end-user exposed so there's no need to translate these messages
-    //I know it's too big for PHP, but I cannot make it smaller. Maybe some time...
     //write XML error
-    static function error($id, $msg = '', $arg = array()) {
-        APIError::validateArgumentsArray($id, $arg);
+    static function error($id, $msg = '', $attribs = array()) {
+        APIError::validateAttributesArray($id, $attribs);
         echo '<error id="' . $id . '"';
-        foreach ($arg as $name => $value) {
+        foreach ($attribs as $name => $value) {
             echo ' ' . $name . '="' . $value . '"';
         }
         echo '>';
 
         if ($msg == '') {
-            if ($id == APIError::noAttr) {
-                echo 'Attribute "' . $arg['attribute'] . '" not found';
-            } else if ($id == APIError::attrNotValid) {
-                echo 'Attribute "' . $arg['attribute'] . '" not valid';
-                if (array_key_exists('valid', $arg)) { //yeah too many nested, but making awful oneliner would be worse
-                    echo ' (valid value: "' . $arg['valid'] . '")';
-                }
-            } else {
-                echo APIError::getDefaultMessage($id);
-            }
+            echo APIError::getDefaultMessage($id, $attribs);
         } else {
             echo $msg;
         }
