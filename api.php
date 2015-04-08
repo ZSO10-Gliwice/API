@@ -26,20 +26,13 @@ require_once BASE_DIR . '/api/var.php';
 
 echo XML_HEADER . XML_API_OPEN; //introduction to client
 
-//check for client attribute
-if (!filter_input(INPUT_GET, 'client')) {
-    error(APIError::client, false);
-} else {
-    //check if client is valid
-    if (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0) {
-        error(APIError::client, true);
-    }
+//check for client attribute and if it's valid
+if ((check_attrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
+    error(APIError::client, true);
 }
 
-//check for version attribute
-if (!filter_input(INPUT_GET, 'version')) {
-    error(APIError::version, false);
-} else if (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0) {       //beta version is unstable, so any API inconsistance is user fault
+//check for version attribute and for beta version – it's unstable, so any API inconsistance is user fault
+if ((check_attrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
     //check if client version is up to date
     if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
             && (filter_input(INPUT_GET, 'version') != VERSION_APP_ANDROID)) {
@@ -48,9 +41,7 @@ if (!filter_input(INPUT_GET, 'version')) {
 }
 
 //check for module attribute
-if (!filter_input(INPUT_GET, 'module')) {
-    error(APIError::module, false);
-} else {
+if (check_attrib('module')) {
     //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
         case "lucky": include 'api/lucky.php'; break;

@@ -61,4 +61,16 @@ abstract class BasicEnum {
 
     	return NULL;
     }
+    
+    public static function getValue($name) {
+        $constants = self::getConstants();
+
+        foreach ($constants as $n => $value) {
+            if ($n == $name) {
+                return $value;
+            }
+        }
+
+    	return NULL;
+    }
 }

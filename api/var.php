@@ -30,20 +30,30 @@ abstract class APIError extends BasicEnum {
     const module = 3;
 }
 
-function error($id, $exists, $arg = '', $msg = '') {
-    echo '<error id="' . $id . ($arg == '' ? "" : " " . $arg) . '">';
+function error($name, $exists, $arg = '', $msg = '') {
+    echo '<error id="' . APIError::getValue($name) . ($arg == '' ? "" : " " . $arg) . '">';
     
     if ($msg == '') {
         if ($exists) {
-            echo 'Invalid ' . APIError::getName($id);
+            echo 'Invalid ' . $name;
         } else {
-            echo 'No "' . APIError::getName($id) . '" parameter';
+            echo 'No "' . $name . '" parameter';
         }
     } else {
         echo $msg;
     }
     
     echo '</error>';
+}
+
+//Check if attribute exists and if not throw error
+function check_attrib($name) {
+    if (filter_input(INPUT_GET, $name)) {
+        return true;
+    } else {
+        error($name, false);
+        return false;
+    }
 }
 
 //XML
