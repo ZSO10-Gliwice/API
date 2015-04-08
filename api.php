@@ -22,15 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'var.php';
-require_once BASE_DIR . 'api/var.php';
-require_once BASE_DIR . 'config.php';   //for DB config
+require_once 'config.php';
+require_once 'lib/var.php';
 
-echo XML_HEADER . XML_API_OPEN; //introduction to client
+echo XML_HEADER . XML_API_OPEN; //XML introduction
 
 //check for client attribute and if it's valid
 if ((check_attrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
-    error(APIError::client, true);
+    error('client', true);
 }
 
 //check for version attribute and for beta version – it's unstable, so any API inconsistance is user fault
@@ -38,25 +37,24 @@ if ((check_attrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'),
     //check if client version is up to date
     if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
             && (filter_input(INPUT_GET, 'version') != VERSION_APP_ANDROID)) {
-        error(APIError::version, true, '', 'current="' . VERSION_APP_ANDROID . '"');
+        error('version', true, '', 'current="' . VERSION_APP_ANDROID . '"');
     }
 }
 
 //db handler is required for submodules
-$dblink = mysqli_connect(\Config\DB::host, \Config\DB::user, \Config\DB::password);
-if (!$dblink) {
-    db_error($dblink);
+$dblink = new mysqli(\Config\DB\host, \Config\DB\user, \Config\DB\password,
+        \Config\DB\database);
+if ($dblink->connect_errno) {
+    db_error($dblink->connect_errno, $dblink->connect_error);
 }
-
-mysqli_select_db($dblink, 'my_database') or db_error($dblink);
 
 //check for module attribute
 if (check_attrib('module')) {
     //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
-        case "lucky": include BASE_DIR . 'api/lucky.php'; break;
+        case "lucky": include 'modules/lucky.php'; break;
 
-        default: error(APIError::module, true); break;  //error if module name was not found
+        default: error('module', true); break;  //error if module name was not found
     }
 }
 

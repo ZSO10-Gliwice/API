@@ -18,15 +18,18 @@
  */
 
 namespace Config {
+    
+    define('Config\timezone', 'Europe/Warsaw');
+    
+}
 
-    abstract class DB {
-
-        const host = 'localhost';
-        const user = 'zso10app';
-        const password = 'fsadpass1029';
-        const database = 'zso10app';
-        const table_prefix = 'app_';
-
-    }
-
+namespace Config\DB {
+    
+    define('Config\DB\host', 'localhost');
+    define('Config\DB\port', '3306');
+    define('Config\DB\user', 'zso10app');
+    define('Config\DB\password', 'fsadpass1029');
+    define('Config\DB\database', 'zso10app');
+    define('Config\DB\table_prefix', 'app_');
+        
 }
