@@ -16,11 +16,11 @@ Do nazw plików powinien być dołączony kod języka, np.:
 dla wszystkich plików. W plikach źródłowych można go przekroczyć dla komentarzy.
 3. Zasady formatowania kodu:
     - Javowe nawiasy i 4-spacjowe wcięcia:
-      ````
-      if (true) {
-          foo();
-      }
-      ````
+````PHP
+if (true) {
+    foo();
+}
+````
     - pojedynczy cudzysłówn dla tekstów PHP, podwójny cudzysłów dla XML/SQL
 4. Kod tego projektu jest tworzony również w celach naukowych. Z tego powodu
 proszę umieszczać pełną dokumentację i komentarze w celu polepszenia
