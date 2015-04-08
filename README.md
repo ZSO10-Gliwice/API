@@ -15,12 +15,8 @@ included in file name, for example:
 2. If it's possible and reasonable, 100 character margin should be preserved in
 all files. In code files comments can exceed this limit.
 3. Code rules:
-    - Java-like braces and 4-space indents, like:
-      ````
-      if (true) {
-          foo();
-      }
-      ````
+    - Java-like braces
+    - 4-space indents
     - single quotes for PHP's strings and double quotes for XML/SQL
 4. Code developed in this project is directed also for educational purpose,
 so please provide comprehensive documentation and comments to improve
