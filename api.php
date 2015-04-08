@@ -28,16 +28,16 @@ require_once 'lib/var.php';
 echo XML_HEADER . XML_API_OPEN; //XML introduction
 
 //check for client attribute and if it's valid
-if ((check_attrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
-    error('client', true);
+if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
+    errorAttribNotValid('client', 'android');
 }
 
 //check for version attribute and for beta version – it's unstable, so any API inconsistance is user fault
-if ((check_attrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
+if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
     //check if client version is up to date
     if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
             && (filter_input(INPUT_GET, 'version') != VERSION_APP_ANDROID)) {
-        error('version', true, '', 'current="' . VERSION_APP_ANDROID . '"');
+        errorAttribNotValid('version', VERSION_APP_ANDROID);
     }
 }
 
@@ -45,16 +45,16 @@ if ((check_attrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'),
 $dblink = new mysqli(\Config\DB\host, \Config\DB\user, \Config\DB\password,
         \Config\DB\database);
 if ($dblink->connect_errno) {
-    db_error($dblink->connect_errno, $dblink->connect_error);
+    APIError::dbError($dblink->connect_errno, $dblink->connect_error);
 }
 
 //check for module attribute
-if (check_attrib('module')) {
+if (checkAttrib('module')) {
     //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
         case "lucky": include 'modules/lucky.php'; break;
 
-        default: error('module', true); break;  //error if module name was not found
+        default: errorAttribNotValid('module', 'lucky'); break;  //error if module name was not found
     }
 }
 

@@ -21,78 +21,150 @@
 
 date_default_timezone_set(\Config\timezone);
 
-//Version
+/*
+ * Versions
+ */
+
 //TODO get from db
 define('VERSION_APP_ANDROID', 'beta');  //Current version of Android app
 define('VERSION_API', '0.0.1');         //API current version
 
-//Errors
+/*
+ * Errors
+ */
 
 require_once 'enum.php';
 
 //enum static class for defining error codes
 //mainly used for GET attributes
 abstract class APIError extends BasicEnum {
-    const db        = 0; //database error
-    const nothing   = 1; //nothing to show
-    const client    = 2;
-    const version   = 3;
-    const module    = 4;
-    const date      = 5;
-}
-
-//it's not end-user exposed so there's no need to translate these messages
-//write XML error
-function error($name, $exists, $msg = '', $arg = '') {
-    $value = APIError::getValue($name);
-    echo '<error';
-    if ($value != '') {
-        echo ' id="' . $value . '"';
-    }
-    if ($arg != '') {   //additional argument for error tag
-        echo ' ' . $arg;
-    }
-    echo '>';
-
-    if ($msg == '') {
-        if ($name == 'nothing') {
-            echo 'Nothing to show';
-        } else if ($exists) { //default message is for attributes handling
-            echo 'Invalid ' . $name;
-        } else {
-            echo 'No "' . $name . '" parameter';
+    const runtime       = 1; //runtime error
+    const db            = 2; //database error
+    const parse         = 3; //parse error
+    const noAttr        = 4; //attribute not found
+    const attrNotValid  = 5; //attribute not valid
+    const nothing       = 6; //nothing to show
+    
+    static private function getDefaultMessage($id) {
+        switch ($id) {
+            case APIError::runtime: return 'Runtime error! This should never'
+                                            . 'happen! Get in touch with'
+                                            . 'developers.';
+            case APIError::db:      return 'Database error';
+            case APIError::parse:   return 'Parse error';
+            case APIError::noAttr:  return 'Attribute not found';
+            case APIError::attrNotValid: return 'Attribute not valid';
+            case APIError::nothing: return 'Nothing to show';
+            
+            default: return 'Unknown error';
         }
-    } else {
-        echo $msg;
+    }
+    
+    static private function validateArgumentsArray($id, $arr) {
+        foreach ($arr as $name => $value) {
+            if ($name == 'id') {
+                APIError::errorRuntimeError($id, false, 'id');
+            }
+        }
+        
+        if (($id == APIError::db) && (!array_key_exists('db_errno', $arr))) {
+            APIError::errorRuntimeError($id, true, 'db_errno');
+        } else if ((($id == APIError::noAttr) || ($id == APIError::attrNotValid))
+                && (!array_key_exists('attribute', $arr))) {
+            APIError::errorRuntimeError($id, true, 'attribute');
+        } else if (!APIError::isValidValue($id)) {
+            APIError::runtimeError('Unknown error id: ' . $id,
+                                         array('error_id' => $id));
+        }
+    }
+    
+    //it's not end-user exposed so there's no need to translate these messages
+    //I know it's too big for PHP, but I cannot make it smaller. Maybe some time...
+    //write XML error
+    static function error($id, $msg = '', $arg = array()) {
+        APIError::validateArgumentsArray($id, $arg);
+        echo '<error id="' . $id . '"';
+        foreach ($arg as $name => $value) {
+            echo ' ' . $name . '="' . $value . '"';
+        }
+        echo '>';
+
+        if ($msg == '') {
+            if ($id == APIError::noAttr) {
+                echo 'Attribute "' . $arg['attribute'] . '" not found';
+            } else if ($id == APIError::attrNotValid) {
+                echo 'Attribute "' . $arg['attribute'] . '" not valid';
+                if (array_key_exists('valid', $arg)) { //yeah too many nested, but making awful oneliner would be worse
+                    echo ' (valid value: "' . $arg['valid'] . '")';
+                }
+            } else {
+                echo APIError::getDefaultMessage($id);
+            }
+        } else {
+            echo $msg;
+        }
+        
+        echo '</error>';
+    }
+    
+    static private function errorRuntimeError($error_id, $should_contain, $problem_attrib) {
+        $msg = 'Argument list for error(' . $error_id . ') function should ';
+        if (!$should_contain) {
+            $msg .= 'not ';
+        }
+        $msg .= 'contain "' . $problem_attrib . '" argument!';
+        APIError::runtimeError($msg, array('error_id' => $error_id,
+                                            'problem_attrib' => $problem_attrib));
+    }
+    
+    //write XML end_error for emergency runtime error
+    static function runtimeError($msg, $args = array()) {
+        APIError::endError(APIError::runtime,
+                $msg . ' ' . APIError::getDefaultMessage(APIError::runtime),
+                $args);
     }
 
-    echo '</error>';
+    //write XML end_error for db error
+    static function dbError($errno, $error) {
+        APIError::endError(APIError::db, $error, array('db_errno' => $errno));
+    }
+
+    //write XML error and end document
+    static function endError($id, $msg = '', $arg = array()) {
+        APIError::error($id, $msg, $arg);
+        close();
+    }
+    
 }
 
-//write XML error and end document
-function end_error($name, $exists, $msg = '', $arg = '') {
-    error($name, $exists, $msg, $arg);
-    close();
-}
-
-//write XML error for db error
-function db_error($errno, $error) {
-    end_error('db', true, $error, 'db_errno="' . $errno . '"');
-}
+/*
+ * Attribute checking
+ */
 
 //Check if attribute exists and if not - write error
-function check_attrib($name, $exec_error = true) {
+function checkAttrib($name, $exec_error = true) {
     if (filter_input(INPUT_GET, $name)) {
         return true;
     } else {
         if ($exec_error) {
-            error($name, false);
+            APIError::error(APIError::noAttr, '', array('attribute' => $name));
         }
         return false;
     }
 }
 
-//XML tags
+function errorAttribNotValid($attrib, $valid = '', $msg = '') {
+    $attributes['attribute'] = $attrib;
+    if ($valid != '') {
+        $attributes['valid'] = $valid;
+    }
+    APIError::error(APIError::attrNotValid, $msg, $attributes);
+}
+
+/*
+ * XML handling
+ */
+
 define('XML_HEADER', '<?xml version="1.0" encoding="UTF-8"?>');
 define('XML_API_OPEN', '<api version="' . VERSION_API . '">');
 define('XML_API_CLOSE', '</api>');
