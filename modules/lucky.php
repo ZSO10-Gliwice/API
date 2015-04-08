@@ -21,14 +21,13 @@
 
 //TORETHINK after making server side generator – it basically ok, but some
 //          things may change
-//TODEBUG
 
-$query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
 /* @var $dblink mysqli */
+$query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
 
 //used for range based select
 $range = false;
-if (check_attrib('range', false)) {
+if (checkAttrib('range', false)) {
     $range = filter_input(INPUT_GET, 'range');
 }
 
@@ -45,16 +44,16 @@ function validate_date($date) {
 $from_date;
 $to_date;
 if ($range) {
-    if (check_attrib('date', false)) {                          //present for range from 'date' to now
+    if (checkAttrib('date', false)) {                          //present for range from 'date' to now
         $from_date = validate_date(filter_input(INPUT_GET, 'date'));
         $to_date = date('Y-m-d');
-    } else if (check_attrib('date1', false) && check_attrib('date2', false)) {//present for range from 'date1' to 'date2'
+    } else if (checkAttrib('date1', false) && checkAttrib('date2', false)) {//present for range from 'date1' to 'date2'
         $from_date = validate_date(filter_input(INPUT_GET, 'date1'));
         $to_date = validate_date(filter_input(INPUT_GET, 'date2'));
     } else {
         end_error('date', false, 'No date or date1/date2 for date range');
     }
-} else if (check_attrib('date', false) && !$range) {  //filter exact date
+} else if (checkAttrib('date', false) && !$range) {  //filter exact date
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
 
