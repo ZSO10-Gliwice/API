@@ -25,14 +25,18 @@
 require_once 'config.php';
 require_once 'lib/var.php';
 
-echo XML_HEADER . XML_API_OPEN; //XML introduction
+/** XML introduction */
+echo XML_HEADER . XML_API_OPEN;
 
-//check for client attribute and if it's valid
+/** Check for client attribute and if it's valid */
 if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
     errorAttribNotValid('client', 'android');
 }
 
-//check for version attribute and for beta version – it's unstable, so any API inconsistance is user fault
+/**
+ * Check for version attribute and for beta version – it's unstable,
+ * so any API inconsistance is user fault
+ */
 if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
     //check if client version is up to date
     if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
@@ -41,7 +45,7 @@ if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 
     }
 }
 
-//check for module attribute
+/** Check for module attribute */
 if (checkAttrib('module')) {
     //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
@@ -51,4 +55,5 @@ if (checkAttrib('module')) {
     }
 }
 
-echo XML_API_CLOSE;
+/** Close document */
+close();

@@ -19,10 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//basing on http://stackoverflow.com/a/254543
+/**
+ * Enumerator base class
+ * 
+ * @author Brian Cline and Marek Pikuła
+ * (Basing on http://stackoverflow.com/a/254543)
+ */
 abstract class BasicEnum {
+    /** Cached array of constants */
     private static $constCacheArray = NULL;
 
+    /**
+     * Gets list of constants
+     * @return array array of constants
+     */
     private static function getConstants() {
         if (self::$constCacheArray == NULL) {
             self::$constCacheArray = [];
@@ -35,6 +45,13 @@ abstract class BasicEnum {
         return self::$constCacheArray[$calledClass];
     }
 
+    /**
+     * Checks if given const name is present in class.
+     * 
+     * @param string $name constant name
+     * @param boolean $strict if name should be checked case sensitive
+     * @return boolean if enum name exists
+     */
     public static function isValidName($name, $strict = false) {
         $constants = self::getConstants();
 
@@ -46,11 +63,23 @@ abstract class BasicEnum {
         return in_array(strtolower($name), $keys);
     }
 
+    /**
+     * Checks if given value is represented by some constant
+     * 
+     * @param integer $value enum value
+     * @return boolean if enum value exists
+     */
     public static function isValidValue($value) {
         $values = array_values(self::getConstants());
         return in_array($value, $values, $strict = true);
     }
 
+    /**
+     * Gets name of enum from given value
+     * 
+     * @param integer $value enum value
+     * @return string|null enum name or NULL if value not present
+     */
     public static function getName($value) {
         $constants = self::getConstants();
 
@@ -63,6 +92,12 @@ abstract class BasicEnum {
         return NULL;
     }
 
+    /**
+     * Get value from given enum name
+     * 
+     * @param string $name enum name
+     * @return integer|null enum value or NULL if name not present
+     */
     public static function getValue($name) {
         $constants = self::getConstants();
 

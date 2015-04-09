@@ -17,13 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Basic database configuration constans
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
 namespace Config\DB {
     
+    /** Database hostname */
     define('Config\DB\host', 'localhost');
+    /** Database connection port */
     define('Config\DB\port', '3306');
+    /** Database user name */
     define('Config\DB\user', 'zso10app');
+    /** Database password */
     define('Config\DB\password', 'fsadpass1029');
+    /** Main ZSO10 App database name */
     define('Config\DB\database', 'zso10app');
+    /**
+     * Table name prefix.
+     * 
+     * For example: app_lucky
+     */
     define('Config\DB\table_prefix', 'app_');
         
 }
