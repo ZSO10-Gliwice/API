@@ -2,11 +2,11 @@
 Web API for ZSO10 App
 
 ## License
-Entire ZSO10 App project is licensed uder GNU GPLv3, which copy is provided
+Entire ZSO10 App project is licensed uder GNU GPLv3, whose copy is provided
 in every package in file LICENSE.
 
 ## Basic ZSO10 App project rules
-1. For convenience all code documentation for entire ZSO10 App project should be
+1. For convenience all code documentation for the entire ZSO10 App project should be
 written in English. Of course all additional text files (as this README) can
 exist in different languages, but English is mandatory. Language code should be
 included in file name, for example:
@@ -19,7 +19,7 @@ all files. In code files comments can exceed this limit.
     - 4-space indents
     - single quotes for PHP's strings and double quotes for XML/SQL
 4. Documentation and comments:
-    - Code developed in this project is directed also for educational purpose,
+    - Code developed in this project is also directed for educational purpose,
       so please provide comprehensive documentation and comments to improve
       understandability.
     - for specific files please use it's documentation standard:
@@ -50,7 +50,7 @@ contributor should at least have basic idea of open source software
 ([Wiki](http://en.wikipedia.org/wiki/Open-source_software)) and
 GNU GPLv3 license ([Wiki](http://en.wikipedia.org/wiki/GNU_General_Public_License)),
 which is used for this project.
-7. Anyone, who wants to actively contribute in this project should get in touch
+7. Anyone, who wants to actively contribute to this project should get in touch
 with @MarPiRK, but of course anyone can submit issues on GitHub pages.
 8. Current TODO list and roadmap is publicly available on
 [Trello](https://trello.com/b/kLHUx3Uk).
