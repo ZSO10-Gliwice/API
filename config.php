@@ -20,7 +20,7 @@
 /**
  * Basic database configuration constans
  * 
- * @author Marek Pikuła [marpirk at gmail.com]
+ * @author Marek Pikuła <marpirk@gmail.com>
  */
 namespace Config\DB {
     

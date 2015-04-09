@@ -55,5 +55,5 @@ if (checkAttrib('module')) {
     }
 }
 
-/** Close XML tag */
-echo XML_API_CLOSE;
+/** Close document */
+close();

@@ -55,6 +55,8 @@ require_once 'enum.php';
 
 /**
  * Enum static class for handling error reporting.
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
  */
 abstract class APIError extends BasicEnum {
     /** Runtime error       */
@@ -269,5 +271,7 @@ define('XML_API_CLOSE', '</api>');
 /** End XML document and exit. */
 function close() {
     echo XML_API_CLOSE;
+    global $dblink;
+    $dblink->close();
     exit();
 }

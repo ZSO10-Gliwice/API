@@ -22,7 +22,6 @@
 //TORETHINK after making server side generator – it basically ok, but some
 //          things may change
 
-/* @var $dblink mysqli */
 $query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
 
 //used for range based select
@@ -31,8 +30,17 @@ if (checkAttrib('range', false)) {
     $range = filter_input(INPUT_GET, 'range');
 }
 
-//validate if given date is in right format to prevent from SQL injection
-//date should be in format 'Y-m-d'
+/**
+ * Validate if given date is in right format to prevent from SQL injection.
+ * 
+ * Date should be in format 'Y-m-d'. If it's not parse endError is thrown.
+ * 
+ * @param string $date date to validate
+ * @return boolean if valid
+ * 
+ * @see APIError::endError()
+ * @see APIError::parse
+ */
 function validate_date($date) {
     $date_arr = explode('-', $date);
     if (count($date_arr) != 3 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
@@ -42,6 +50,10 @@ function validate_date($date) {
     return $date;
 }
 
+/**
+ * Date ranges.
+ * @todo It would be probably better to include ranging in SQL query
+ */
 $from_date;
 $to_date;
 if ($range) {
@@ -58,14 +70,17 @@ if ($range) {
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
 
-/* @var $result mysqli_result */
+/** @var $result mysqli_result */
 $result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->error);
 
 $i = 0; //coutner of dates
+/** Final write of numbers data as XML */
 while ($row = $result->fetch_assoc()) {
-    //I assume, that server is inserting dates in order
-    //Otherwise it may have unpredicted result! It can be handled by SQL
-    //sorting, but I think that it's pointless in this situation
+    /**
+     * I assume, that server is inserting dates in order
+     * Otherwise it may have unpredicted result! It can be handled by SQL
+     * sorting, but I think that it's pointless in this situation
+     */
     if ($range) {
         if ($row['date'] < $from_date) {
             continue;
@@ -77,6 +92,10 @@ while ($row = $result->fetch_assoc()) {
     $i++;
 }
 
+/**
+ * If no numbers were printed throw nothing to show error.
+ * @see APIError::nothing
+ */
 if ($i == 0) {
-    APIError::error(APIError::noAttr);
+    APIError::endError(APIError::nothing);
 }
