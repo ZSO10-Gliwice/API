@@ -17,12 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Config {
-    
-    define('Config\timezone', 'Europe/Warsaw');
-    
-}
-
 namespace Config\DB {
     
     define('Config\DB\host', 'localhost');

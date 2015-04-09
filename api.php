@@ -41,13 +41,6 @@ if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 
     }
 }
 
-//db handler is required for submodules
-$dblink = new mysqli(\Config\DB\host, \Config\DB\user, \Config\DB\password,
-        \Config\DB\database);
-if ($dblink->connect_errno) {
-    APIError::dbError($dblink->connect_errno, $dblink->connect_error);
-}
-
 //check for module attribute
 if (checkAttrib('module')) {
     //check if attribute is valid and if so, include it

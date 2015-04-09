@@ -19,15 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-date_default_timezone_set(\Config\timezone);
+//db handler is required for submodules
+$dblink = new mysqli(\Config\DB\host, \Config\DB\user, \Config\DB\password,
+        \Config\DB\database);
+if ($dblink->connect_errno) {
+    APIError::dbError($dblink->connect_errno, $dblink->connect_error);
+}
 
-/*
- * Versions
- */
+/* @var $result mysqli_result */
+$result = $dblink->query('SELECT * FROM ' . \Config\DB\table_prefix . 'settings');
 
-//TODO get from db
-define('VERSION_APP_ANDROID', 'beta');  //Current version of Android app
-define('VERSION_API', '0.0.1');         //API current version
+while ($row = $result->fetch_assoc()) {
+    switch ($row['name']) {
+        case 'default_timezone':
+            date_default_timezone_set($row['value']); break;
+        
+        //Versions
+        case 'version_android':
+            define('VERSION_APP_ANDROID', $row['value']); break;    //Current version of Android app
+        case 'version_api':
+            define('VERSION_API', $row['value']); break;            //API current version
+
+        default:
+            break;
+    }
+}
 
 /*
  * Errors
