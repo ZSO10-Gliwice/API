@@ -36,7 +36,8 @@ if (checkAttrib('range', false)) {
 function validate_date($date) {
     $date_arr = explode('-', $date);
     if (count($date_arr) != 3 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
-        end_error('date', true, 'Wrong date format');
+        APIError::endError(APIError::parse, 'Wrong date format for date "' . $date . '"',
+                            array('valid' => 'Y-m-d', 'wrong' => $date));
     }
     return $date;
 }
@@ -44,25 +45,27 @@ function validate_date($date) {
 $from_date;
 $to_date;
 if ($range) {
-    if (checkAttrib('date', false)) {                          //present for range from 'date' to now
+    if (checkAttrib('date', false)) { //present for range from 'date' to now
         $from_date = validate_date(filter_input(INPUT_GET, 'date'));
         $to_date = date('Y-m-d');
-    } else if (checkAttrib('date1', false) && checkAttrib('date2', false)) {//present for range from 'date1' to 'date2'
+    } else if (checkAttrib('date1', false) && checkAttrib('date2', false)) { //present for range from 'date1' to 'date2'
         $from_date = validate_date(filter_input(INPUT_GET, 'date1'));
         $to_date = validate_date(filter_input(INPUT_GET, 'date2'));
     } else {
-        end_error('date', false, 'No date or date1/date2 for date range');
+        APIError::endError(APIError::noAttr, 'No date or date1/date2 for date range');
     }
 } else if (checkAttrib('date', false) && !$range) {  //filter exact date
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
 
 /* @var $result mysqli_result */
-$result = $dblink->query($query) or db_error($dblink->errno, $dblink->error);
+$result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->error);
 
 $i = 0; //coutner of dates
 while ($row = $result->fetch_assoc()) {
     //I assume, that server is inserting dates in order
+    //Otherwise it may have unpredicted result! It can be handled by SQL
+    //sorting, but I think that it's pointless in this situation
     if ($range) {
         if ($row['date'] < $from_date) {
             continue;
@@ -75,5 +78,5 @@ while ($row = $result->fetch_assoc()) {
 }
 
 if ($i == 0) {
-    error('nothing', false);
+    APIError::error(APIError::noAttr);
 }

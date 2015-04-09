@@ -70,6 +70,9 @@ abstract class APIError extends BasicEnum {
         if (array_key_exists('id', $arr)) {
             APIError::errorRuntimeError($id, false, 'id');
         }
+        if (array_key_exists('name', $arr)) {
+            APIError::errorRuntimeError($id, false, 'name');
+        }
         
         if (($id == APIError::db) && (!array_key_exists('db_errno', $arr))) {
             APIError::errorRuntimeError($id, true, 'db_errno');
@@ -85,7 +88,7 @@ abstract class APIError extends BasicEnum {
     //write XML error
     static function error($id, $msg = '', $attribs = array()) {
         APIError::validateAttributesArray($id, $attribs);
-        echo '<error id="' . $id . '"';
+        echo '<error id="' . $id . '" name="' . APIError::getName($id) . '"';
         foreach ($attribs as $name => $value) {
             echo ' ' . $name . '="' . $value . '"';
         }
