@@ -1,4 +1,9 @@
 <?php
+/**
+ * Basic editable configuration for API engine
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
 
 /*
  * Copyleft (ↄ) 2015 Marek Pikuła
@@ -18,26 +23,31 @@
  */
 
 /**
- * Basic database configuration constans
+ * Basic database configuration constants
  * 
  * @author Marek Pikuła <marpirk@gmail.com>
  */
 namespace Config\DB {
     
-    /** Database hostname */
+    /** Database hostname
+     * @package Config\DB */
     define('Config\DB\host', 'localhost');
-    /** Database connection port */
+    /** Database connection port
+     * @package Config\DB */
     define('Config\DB\port', '3306');
-    /** Database user name */
+    /** Database user name
+     * @package Config\DB */
     define('Config\DB\user', 'zso10app');
-    /** Database password */
+    /** Database password
+     * @package Config\DB */
     define('Config\DB\password', 'fsadpass1029');
-    /** Main ZSO10 App database name */
+    /** Main ZSO10 App database name
+     * @package Config\DB */
     define('Config\DB\database', 'zso10app');
     /**
      * Table name prefix.
-     * 
      * For example: app_lucky
+     * @package Config\DB
      */
     define('Config\DB\table_prefix', 'app_');
         

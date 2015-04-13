@@ -1,9 +1,12 @@
 <?php
 
-/*
+/**
  * Main API interface
  * 
- * All attributes are handled as GET request. Each module is included from
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
+
+/* All attributes are handled as GET request. Each module is included from
  * different file under "api" directory.
  * 
  * Copyleft (ↄ) 2015 Marek Pikuła
@@ -22,8 +25,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** Configuration is needed for database access */
 require_once 'config.php';
+/** Variables contain needed functions and constants */
 require_once 'lib/var.php';
+/** Errors are essential part of API handling */
+require_once 'lib/error.php';
 
 /** XML introduction */
 echo XML_HEADER . XML_API_OPEN;
@@ -35,7 +42,7 @@ if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'a
 
 /**
  * Check for version attribute and for beta version – it's unstable,
- * so any API inconsistance is user fault
+ * so any API inconsistance is user fault.
  */
 if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
     //check if client version is up to date

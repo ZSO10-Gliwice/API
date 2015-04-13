@@ -1,8 +1,11 @@
 <?php
-
-/*
+/**
  * Basic enum support
  * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
+
+/* 
  * Copyleft (ↄ) 2015 Marek Pikuła
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,11 +29,12 @@
  * (Basing on http://stackoverflow.com/a/254543)
  */
 abstract class BasicEnum {
+    
     /** Cached array of constants */
     private static $constCacheArray = NULL;
 
     /**
-     * Gets list of constants
+     * Get list of constants
      * @return array array of constants
      */
     private static function getConstants() {
@@ -46,7 +50,7 @@ abstract class BasicEnum {
     }
 
     /**
-     * Checks if given const name is present in class.
+     * Check if given const name is present in class.
      * 
      * @param string $name constant name
      * @param boolean $strict if name should be checked case sensitive
@@ -64,7 +68,7 @@ abstract class BasicEnum {
     }
 
     /**
-     * Checks if given value is represented by some constant
+     * Check if given value is represented by some constant
      * 
      * @param integer $value enum value
      * @return boolean if enum value exists
@@ -75,7 +79,7 @@ abstract class BasicEnum {
     }
 
     /**
-     * Gets name of enum from given value
+     * Get name of enum from given value
      * 
      * @param integer $value enum value
      * @return string|null enum name or NULL if value not present

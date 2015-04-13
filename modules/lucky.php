@@ -1,8 +1,11 @@
 <?php
-
-/*
+/**
  * Lucky Numbers API
  * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
+
+/* 
  * Copyleft (ↄ) 2015 Marek Pikuła
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,9 +25,10 @@
 //TORETHINK after making server side generator – it basically ok, but some
 //          things may change
 
+/** Database query */
 $query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
 
-//used for range based select
+/** Used for range based select */
 $range = false;
 if (checkAttrib('range', false)) {
     $range = filter_input(INPUT_GET, 'range');
@@ -40,6 +44,8 @@ if (checkAttrib('range', false)) {
  * 
  * @see APIError::endError()
  * @see APIError::parse
+ * 
+ * @package Modules\Lucky
  */
 function validate_date($date) {
     $date_arr = explode('-', $date);
@@ -52,7 +58,8 @@ function validate_date($date) {
 
 /**
  * Date ranges.
- * @todo It would be probably better to include ranging in SQL query
+ * 
+ * @todo It would be better to include ranging in SQL query
  */
 $from_date;
 $to_date;
@@ -70,11 +77,11 @@ if ($range) {
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
 
-/** @var $result mysqli_result */
+/** @var $result mysqli_result Result of MySQL query */
 $result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->error);
 
-$i = 0; //coutner of dates
-/** Final write of numbers data as XML */
+$i = 0; /** Coutner of dates */
+/** Final print of numbers data as XML */
 while ($row = $result->fetch_assoc()) {
     /**
      * I assume, that server is inserting dates in order
@@ -94,6 +101,7 @@ while ($row = $result->fetch_assoc()) {
 
 /**
  * If no numbers were printed throw nothing to show error.
+ * 
  * @see APIError::nothing
  */
 if ($i == 0) {
