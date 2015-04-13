@@ -61,7 +61,7 @@ abstract class APIError extends BasicEnum {
      */
     static private function getDefaultMessage($id, $attribs = array()) {
         switch ($id) {
-            case self::runtime: return 'Runtime error! This should never happen!'
+            case self::runtime: return 'Runtime error! This should never happen! '
                                         . 'Get in touch with developers.';
             case self::db:      return 'Database error';
             case self::parse:   return 'Parse error';

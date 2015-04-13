@@ -76,6 +76,26 @@ if ($range) {
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
 
+/**
+ * Sorting
+ */
+$sort = LUCKY_SORT;
+if (checkAttrib('sort', false)) {
+    $tmp = filter_input(INPUT_GET, 'sort');
+    if ($tmp == '0' || $tmp == '-1' || $tmp == '1') {
+        $sort = $tmp;
+    } else {
+        APIError::endError(APIError::attrNotValid,
+                'sort value should be -1, 0, or 1', array('attribute' => 'sort'));
+    }
+}
+
+if ($sort == '1') {
+    $query .= ' ORDER BY date ASC';
+} else if ($sort == '-1') {
+    $query .= ' ORDER BY date DESC';
+}
+
 /** @todo Possibility to limit requested numbers */
 
 /** @var $result mysqli_result Result of MySQL query */
@@ -84,14 +104,6 @@ $result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->e
 $i = 0; /** Coutner of dates */
 /** Final print of numbers data as XML */
 while ($row = $result->fetch_assoc()) {
-    /**
-     * I assume, that server is inserting dates in order
-     * Otherwise it may have unpredicted result! It can be handled by SQL
-     * sorting, but I think that it's pointless in this situation
-     * 
-     * @todo Use LUCKY_SORT constant
-     * @todo Sort asc/desc attribute
-     */
     echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
     $i++;
 }
