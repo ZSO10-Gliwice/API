@@ -22,6 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** API current version fetched from DB
+* @package Constants */
+define('VERSION_API', '0.0.1');
+
 /** Errors are required for DB errors handling */
 require_once 'error.php';
 
@@ -55,14 +59,12 @@ while ($row = $result->fetch_assoc()) {
                     date_default_timezone_set($row['value']); break;
 
                 //Versions
-                case 'general':
+                case 'version_android':
                     /** Current version of Android app fetched from DB
                      * @package Constants */
                     define('VERSION_APP_ANDROID', $row['value']); break;
                 case 'version_api':
-                    /** API current version fetched from DB
-                     * @package Constants */
-                    define('VERSION_API', $row['value']); break;
+                    define('VERSION_API_DB', $row['value']); break;
                 
                 default: break;
             }
@@ -80,5 +82,15 @@ while ($row = $result->fetch_assoc()) {
             break;
 
         default: break;
+    }
+}
+
+/** @todo Check if all constants were created */
+
+if (defined('VERSION_API_DB')) {
+    if (VERSION_API_DB != VERSION_API) {
+        $dblink->query('UPDATE ' . $table_settings . ' '
+                . 'SET value="' . VERSION_API . '" '
+                . 'WHERE name="version_api"');
     }
 }

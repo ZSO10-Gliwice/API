@@ -30,6 +30,7 @@ require_once 'xml_tags.php';
 /**
  * Enum static class for handling error reporting.
  * 
+ * @todo Per module errors
  * @author Marek Pikuła <marpirk@gmail.com>
  */
 abstract class APIError extends BasicEnum {
