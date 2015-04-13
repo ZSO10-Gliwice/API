@@ -58,8 +58,6 @@ function validate_date($date) {
 
 /**
  * Date ranges.
- * 
- * @todo It would be better to include ranging in SQL query
  */
 $from_date;
 $to_date;
@@ -73,6 +71,7 @@ if ($range) {
     } else {
         APIError::endError(APIError::noAttr, 'No date or date1/date2 for date range');
     }
+    $query .= ' WHERE date BETWEEN "' . $from_date . '" AND "' . $to_date . '"';
 } else if (checkAttrib('date', false) && !$range) {  //filter exact date
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
@@ -88,13 +87,6 @@ while ($row = $result->fetch_assoc()) {
      * Otherwise it may have unpredicted result! It can be handled by SQL
      * sorting, but I think that it's pointless in this situation
      */
-    if ($range) {
-        if ($row['date'] < $from_date) {
-            continue;
-        } else if ($row['date'] > $to_date) {
-            break;
-        }
-    }
     echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
     $i++;
 }
