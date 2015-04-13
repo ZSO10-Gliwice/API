@@ -24,6 +24,8 @@
 
 /** Enum is used as APIError parent */
 require_once 'enum.php';
+/** Required for safe XML document initialization */
+require_once 'xml_tags.php';
 
 /**
  * Enum static class for handling error reporting.
@@ -118,6 +120,8 @@ abstract class APIError extends BasicEnum {
     static function error($id, $msg = '', $attribs = array()) {
         self::validateAttributesArray($id, $attribs);
         
+        XML::openAPIIfNotOpened();
+        
         echo '<error id="' . $id . '" name="' . self::getName($id) . '"';
         foreach ($attribs as $name => $value) { //additional attributes
             echo ' ' . $name . '="' . $value . '"';
@@ -189,4 +193,15 @@ abstract class APIError extends BasicEnum {
         close();
     }
     
+}
+
+/**
+ * End XML document and exit.
+ * @package Variables
+ */
+function close() {
+    XML::closeAPI();
+    global $dblink;
+    $dblink->close();
+    exit();
 }

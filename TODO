@@ -1,0 +1,3 @@
++ use LUCKY_SORT constant for sorting dates in db
++ sort asc/desc attribute for lucky
++ possibility to limit requested numbers (db settings)

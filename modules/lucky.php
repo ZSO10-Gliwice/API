@@ -76,6 +76,8 @@ if ($range) {
     $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
 }
 
+/** @todo Possibility to limit requested numbers */
+
 /** @var $result mysqli_result Result of MySQL query */
 $result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->error);
 
@@ -86,6 +88,9 @@ while ($row = $result->fetch_assoc()) {
      * I assume, that server is inserting dates in order
      * Otherwise it may have unpredicted result! It can be handled by SQL
      * sorting, but I think that it's pointless in this situation
+     * 
+     * @todo Use LUCKY_SORT constant
+     * @todo Sort asc/desc attribute
      */
     echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
     $i++;

@@ -28,12 +28,15 @@
 /** Configuration is needed for database access */
 require_once 'config.php';
 /** Variables contain needed functions and constants */
-require_once 'lib/var.php';
+require_once 'lib/attribs.php';
+/** Required for safe XML tags handling */
+require_once 'lib/xml_tags.php';
 /** Errors are essential part of API handling */
 require_once 'lib/error.php';
+/** Settings gotten from database */
+require_once 'lib/db_settings.php';
 
-/** XML introduction */
-echo XML_HEADER . XML_API_OPEN;
+XML::openAPIIfNotOpened();
 
 /** Check for client attribute and if it's valid */
 if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {

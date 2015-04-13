@@ -30,7 +30,7 @@
  */
 abstract class BasicEnum {
     
-    /** Cached array of constants */
+    /** @var array|null Cached array of constants */
     private static $constCacheArray = NULL;
 
     /**
