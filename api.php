@@ -50,8 +50,8 @@ if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'a
 if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
     //check if client version is up to date
     if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
-            && (filter_input(INPUT_GET, 'version') != VERSION_APP_ANDROID)) {
-        errorAttribNotValid('version', VERSION_APP_ANDROID);
+            && (filter_input(INPUT_GET, 'version') != Config\Version\Client\Android)) {
+        errorAttribNotValid('version', Config\Version\Client\Android);
     }
 }
 

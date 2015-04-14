@@ -23,10 +23,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** API current version fetched from DB
-* @package Constants */
-define('VERSION_API', '0.0.1');
-
 /** Errors are required for DB errors handling */
 require_once 'error.php';
 
@@ -63,11 +59,11 @@ while ($row = $result->fetch_assoc()) {
                 case 'version_android':
                     /** Current version of Android app fetched from DB
                      * @package Constants */
-                    define('VERSION_APP_ANDROID', $row['value']); break;
+                    define('Config\Version\Client\Android', $row['value']); break;
                 case 'version_api':
-                    if ($row['value'] != VERSION_API) {
+                    if ($row['value'] != \Config\Version\API) {
                         $dblink->query('UPDATE ' . $table_settings . ' '
-                                . 'SET value="' . VERSION_API . '" '
+                                . 'SET value="' . \Config\Version\API . '" '
                                 . 'WHERE name="version_api"')
                                 or APIError::dbError();
                     }
@@ -82,8 +78,13 @@ while ($row = $result->fetch_assoc()) {
                 case 'sort':
                     /** If lucky module should sort MySQL table
                      * @package Constants */
-                    define('LUCKY_SORT', $row['value']); break;
+                    define('Config\Modules\Lucky\Sort', $row['value']); break;
 
+                case 'limit':
+                    /** Limit of records to get from db
+                     * @package Constants */
+                    define('Config\Modules\Lucky\Limit', $row['value']); break;
+                    
                 default: break;
             }
             break;

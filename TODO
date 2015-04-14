@@ -1,2 +1,3 @@
-+ possibility to limit requested numbers (db settings)
 + check if all constants were created in db_settings
++ modules as classes
++ errors for modules

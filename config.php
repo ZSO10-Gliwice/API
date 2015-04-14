@@ -23,6 +23,19 @@
  */
 
 /**
+ * Version constants
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ * @package Constants
+ */
+namespace Config\Version {
+    
+    /** API current version fetched from DB */
+    define('Config\Version\API', '0.0.2');
+    
+}
+
+/**
  * Basic database configuration constants
  * 
  * @author Marek Pikuła <marpirk@gmail.com>

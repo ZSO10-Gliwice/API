@@ -58,8 +58,8 @@ abstract class XML {
         self::openIfNotOpened();
         
         echo '<api';
-        if (defined('VERSION_API')) {
-            echo ' version="' . VERSION_API . '"';
+        if (defined('Config\Version\API')) {
+            echo ' version="' . \Config\Version\API . '"';
         }
         echo '>';
         self::$APIOpened = true;

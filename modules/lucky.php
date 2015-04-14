@@ -79,7 +79,7 @@ if ($range) {
 /**
  * Sorting
  */
-$sort = LUCKY_SORT;
+$sort = \Config\Modules\Lucky\Sort;
 if (checkAttrib('sort', false)) {
     $tmp = filter_input(INPUT_GET, 'sort');
     if ($tmp == '0' || $tmp == '-1' || $tmp == '1') {
@@ -96,7 +96,10 @@ if ($sort == '1') {
     $query .= ' ORDER BY date DESC';
 }
 
-/** @todo Possibility to limit requested numbers */
+if (defined('LUCKY_LIMIT') && \Config\Modules\Lucky\Limit != '0') {
+    $limit = \Config\Modules\Lucky\Limit;
+    $query .= ' LIMIT ' . ($limit + 1);
+}
 
 /** @var $result mysqli_result Result of MySQL query */
 $result = $dblink->query($query) or APIError::dbError();
@@ -104,6 +107,11 @@ $result = $dblink->query($query) or APIError::dbError();
 $i = 0; /** Coutner of dates */
 /** Final print of numbers data as XML */
 while ($row = $result->fetch_assoc()) {
+    if (isset($limit) && $i == $limit) {
+        /** @todo Chaaange in future */
+        APIError::endError(APIError::parse, 'Limit of db records exceeded!',
+                array('type' => 'limit', 'limit' => $limit));
+    }
     echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
     $i++;
 }
