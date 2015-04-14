@@ -156,7 +156,6 @@ abstract class APIError extends BasicEnum {
                                        'problem_attrib' => $problem_attrib));
     }
     
-    //write XML end_error for emergency runtime error
     /**
      * Throws runtime error with given message (including default error message)
      * 
@@ -170,16 +169,14 @@ abstract class APIError extends BasicEnum {
                        $args);
     }
 
-    //write XML end_error for db error
     /**
      * Write XML endError for given mysqli errno and error message.
      * 
-     * @param integer $errno mysqli's error number
-     * @param string $error mysqli's error message
      * @see APIError::endError()
      */
-    static function dbError($errno, $error) {
-        self::endError(self::db, $error, array('db_errno' => $errno));
+    static function dbError() {
+        global $dblink;
+        self::endError(self::db, $dblink->error, array('db_errno' => $dblink->errno));
     }
 
     /**

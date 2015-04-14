@@ -99,7 +99,7 @@ if ($sort == '1') {
 /** @todo Possibility to limit requested numbers */
 
 /** @var $result mysqli_result Result of MySQL query */
-$result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->error);
+$result = $dblink->query($query) or APIError::dbError();
 
 $i = 0; /** Coutner of dates */
 /** Final print of numbers data as XML */

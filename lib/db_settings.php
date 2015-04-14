@@ -2,6 +2,7 @@
 /**
  * Database based settings.
  * 
+ * @todo Check if all constants were created
  * @author Marek Pikuła <marpirk@gmail.com>
  */
 
@@ -34,7 +35,7 @@ $dblink = new mysqli(\Config\DB\host, \Config\DB\user, \Config\DB\password,
                      \Config\DB\database, \Config\DB\port);
 /** Handle connection error */
 if ($dblink->connect_errno) {
-    APIError::dbError($dblink->connect_errno, $dblink->connect_error);
+    APIError::dbError();
 }
 
 /** @var $table_settings string Settgins table name */
@@ -48,7 +49,7 @@ $query = 'SELECT ' . $table_modules . '.module_name, ' . $table_settings . '.nam
         . 'ON ' . $table_settings . '.module=' . $table_modules . '.id';
 
 /** @var $result mysqli_result Result of query */
-$result = $dblink->query($query) or APIError::dbError($dblink->errno, $dblink->error);
+$result = $dblink->query($query) or APIError::dbError();
 
 /** Get constants from database */
 while ($row = $result->fetch_assoc()) {
@@ -64,7 +65,13 @@ while ($row = $result->fetch_assoc()) {
                      * @package Constants */
                     define('VERSION_APP_ANDROID', $row['value']); break;
                 case 'version_api':
-                    define('VERSION_API_DB', $row['value']); break;
+                    if ($row['value'] != VERSION_API) {
+                        $dblink->query('UPDATE ' . $table_settings . ' '
+                                . 'SET value="' . VERSION_API . '" '
+                                . 'WHERE name="version_api"')
+                                or APIError::dbError();
+                    }
+                    break;
                 
                 default: break;
             }
@@ -74,7 +81,7 @@ while ($row = $result->fetch_assoc()) {
             switch ($row['name']) {
                 case 'sort':
                     /** If lucky module should sort MySQL table
-                     *  @package Constants */
+                     * @package Constants */
                     define('LUCKY_SORT', $row['value']); break;
 
                 default: break;
@@ -82,15 +89,5 @@ while ($row = $result->fetch_assoc()) {
             break;
 
         default: break;
-    }
-}
-
-/** @todo Check if all constants were created */
-
-if (defined('VERSION_API_DB')) {
-    if (VERSION_API_DB != VERSION_API) {
-        $dblink->query('UPDATE ' . $table_settings . ' '
-                . 'SET value="' . VERSION_API . '" '
-                . 'WHERE name="version_api"');
     }
 }
