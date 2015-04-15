@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Main API interface
  * 
@@ -25,42 +24,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** It has to be first, because of $settings */
+/** It has to be first, because of constants in $settings */
 require_once 'modules/general.php';
 /** Configuration is needed for database access */
 require_once 'config.php';
-/** Variables contain needed functions and constants */
+/** Attributes checking */
 require_once 'lib/attribs.php';
 /** Required for safe XML tags handling */
 require_once 'lib/xml_tags.php';
 /** Errors are essential part of API handling */
 require_once 'lib/error.php';
 
+/**
+ * Autoload module php files.
+ * 
+ * @param string $class_name Class name
+ */
 function __autoload($class_name) {
     $file = 'modules/' . strtolower($class_name) . '.php';
     if (file_exists($file)) {
-        include $file;
+        include_once $file;
     }
 }
 
-/** Settings gotten from database */
+/** Get settings from database. */
 require_once 'lib/db_settings.php';
 
 XML::openAPIIfNotOpened();
 
 $general = new General();
-$general->exec();
 
 /** Check for module attribute */
 if (checkAttrib('module')) {
-    //check if attribute is valid and if so, include it
+    /** Check if attribute is valid and if so, include it */
     switch (filter_input(INPUT_GET, 'module')) {
-        case "lucky":
-            $lucky = new Lucky();
-            $lucky->exec();
-            break;
+        case "lucky": $lucky = new Lucky(); break;
 
-        default: errorAttribNotValid('module', 'lucky'); break;  //error if module name was not found
+        default: errorAttribNotValid('module', 'lucky'); break; //error if module name was not found
     }
 }
 

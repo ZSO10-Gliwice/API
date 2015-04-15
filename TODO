@@ -1,2 +1,2 @@
 + check if all constants were created in db_settings
-+ phpDoc for new code
++ load modules from DB

@@ -25,7 +25,7 @@
 namespace {
     
     /** API current version fetched from DB */
-    General::$settings['Version\API'] = '0.0.3';
+    General::$settings['Version\API'] = '0.0.2';
     
 }
 

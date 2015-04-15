@@ -1,6 +1,6 @@
 <?php
 /**
- * Attribute checking.
+ * Attribute checking
  * 
  * @author Marek Pikuła <marpirk@gmail.com>
  */
@@ -28,9 +28,9 @@ require_once 'error.php';
 /**
  * Check if GET attribute exists and execute error if necessary.
  * 
- * @param string $name attribute name
- * @param boolean $exec_error if has to exec error if not found
- * @return boolean attribute exists
+ * @param string $name Attribute name
+ * @param boolean $exec_error If has to exec error if not found
+ * @return boolean Attribute exists
  * 
  * @package Attributes
  */
@@ -46,11 +46,11 @@ function checkAttrib($name, $exec_error = true) {
 }
 
 /**
- * Throw attribute not valid error.
+ * Throw "attribute not valid" error.
  * 
- * @param string $attrib attribute name
- * @param string $valid the best valid value of attrib (not mandatory)
- * @param string $msg additional error message (not mandatory)
+ * @param string $attrib Attribute name
+ * @param string $valid The best valid value of attrib (not mandatory)
+ * @param string $msg Additional error message (not mandatory)
  * 
  * @package Attributes
  */

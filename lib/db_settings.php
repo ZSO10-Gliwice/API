@@ -1,6 +1,6 @@
 <?php
 /**
- * Database based settings.
+ * Database based settings
  * 
  * @todo Check if all constants were created
  * @author Marek Pikuła <marpirk@gmail.com>
@@ -34,11 +34,12 @@ if ($dblink->connect_errno) {
     GeneralError::dbError();
 }
 
-/** @var $table_settings string Settgins table name */
+/** @var $table_settings String Settgins table name */
 $table_settings = \Config\DB\table_prefix . 'settings';
-/** @var $table_modules string Modules table name */
+/** @var $table_modules String Modules table name */
 $table_modules = \Config\DB\table_prefix . 'modules';
 
+/** @var $query Database query */
 $query = 'SELECT ' . $table_modules . '.module_name, ' . $table_settings . '.name, ' . $table_settings . '.value '
        . 'FROM ' . $table_settings . ' '
        . 'INNER JOIN ' . $table_modules . ' '
@@ -47,7 +48,10 @@ $query = 'SELECT ' . $table_modules . '.module_name, ' . $table_settings . '.nam
 /** @var $result mysqli_result Result of query */
 $result = $dblink->query($query) or GeneralError::dbError();
 
-/** Get constants from database */
+/**
+ * Get constants from database
+ * @todo Get modules from DB
+ */
 while ($row = $result->fetch_assoc()) {
     switch ($row['module_name']) {
         case 'general': General::db_settings($row['name'], $row['value']); break;

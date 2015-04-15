@@ -28,20 +28,22 @@ require_once 'enum.php';
 require_once 'xml_tags.php';
 
 /**
- * Enum static class for handling error reporting.
+ * Enum static class for handling error reporting
  * 
  * @todo Per module errors
  * @author Marek Pikuła <marpirk@gmail.com>
  */
 abstract class APIError extends BasicEnum {
     
+    /** Module id
+     * @see ModuleList */
     const mid = 0;
     
     /** Runtime error */
     const runtime = 1;
     
     /**
-     * Generates default message for given error.
+     * Generate default message for given error.
      * 
      * In attributes array it's possible to include additional informations
      * (it's mandatory for some errors).
@@ -49,26 +51,26 @@ abstract class APIError extends BasicEnum {
      * It's not directly end-user exposed so there's no need to translate
      * these messages.
      * 
-     * @param integer $id error id
-     * @param array $attribs array of attributes
-     * @return string default message
+     * @param integer $id Error id
+     * @param array $attribs Array of attributes
+     * @return string Default message
      */
     static protected function getDefaultMessage($id, $attribs = array()) {
-        if ($id == self::runtime) {
+        if ($id == static::runtime) {
             return 'Runtime error! This should never happen! '
                  . 'Please get in touch with developers.';
         }
     }
     
     /**
-     * Validates attribute array for given error id.
+     * Validate attribute array for given error id.
      * 
      * Some errors have some mandatory attributes, which have to be included.
      * If some attribute is not included, then runtime error is thrown.
      * Not including attribute is only programmer's fault.
      * 
-     * @param integer $id error id
-     * @param array $arr array of attributes
+     * @param integer $id Error id
+     * @param array $arr Array of attributes
      */
     static protected function validateAttributesArray($id, $arr) {
         /** These attributes are included in error function */
@@ -78,6 +80,15 @@ abstract class APIError extends BasicEnum {
         self::validateAttributeArray('ename', $id, $arr);
     }
     
+    /**
+     * Validate attribute if not exists.
+     * 
+     * If `$name` exists in `$arr`, throws `errorRuntimeError($id, false, $name)`.
+     * 
+     * @param string $name Name of attribute
+     * @param integer $id Error id
+     * @param array $arr Array of attributes
+     */
     static private function validateAttributeArray($name, $id, $arr) {
         if (array_key_exists($name, $arr)) {
             static::errorRuntimeError($id, false, $name);
@@ -87,20 +98,19 @@ abstract class APIError extends BasicEnum {
     /**
      * Write XML error.
      * 
-     * @param integer $id error id
-     * @param string $msg error message (if '' default error message is used
-     *                    as message
-     * @param array $attribs array of attributes to include to XML tag
+     * @param integer $id Error id
+     * @param string $msg Error message (if '' default error message is used as message)
+     * @param array $attribs Array of attributes to include to XML tag
      */
     static public function error($id, $msg = '', $attribs = array()) {
         static::validateAttributesArray($id, $attribs);
         
         XML::openAPIIfNotOpened();
         
-        echo '<error mid="' . static::mid . '" '
-                  . 'mname="' . ModuleList::getName(static::mid) . '" '
-                  . 'eid="' . $id . '" '
-                  . 'ename="' . static::getName($id) . '"';
+        echo '<error mid="' . static::mid . '"'
+                 . ' mname="' . ModuleList::getName(static::mid) . '"'
+                 . ' eid="' . $id . '"'
+                 . ' ename="' . static::getName($id) . '"';
         foreach ($attribs as $name => $value) { //additional attributes
             echo ' ' . $name . '="' . $value . '"';
         }
@@ -116,11 +126,11 @@ abstract class APIError extends BasicEnum {
     }
     
     /**
-     * Throws runtime error for wrong error attribute.
+     * Throw runtime error for wrong error attribute.
      * 
-     * @param integer $id errorneus error id
-     * @param boolean $should_contain if should contain or not problem_attrib
-     * @param stirng $problem_attrib name of problematic argument
+     * @param integer $id Errorneus error id
+     * @param boolean $should_contain If should contain or not problem_attrib
+     * @param string $problem_attrib Name of problematic argument
      * @see GeneralError::runtimeError()
      */
     static public function errorRuntimeError($id, $should_contain, $problem_attrib) {
@@ -134,10 +144,10 @@ abstract class APIError extends BasicEnum {
     }
     
     /**
-     * Throws runtime error with given message (including default error message)
+     * Throw runtime error with given message (including default error message).
      * 
-     * @param string $msg message of error
-     * @param array $args array of additional error arguments
+     * @param string $msg Message of error
+     * @param array $args Array of additional error arguments
      * @see GeneralError::endError()
      */
     static public function runtimeError($msg, $args = array()) {
@@ -147,11 +157,11 @@ abstract class APIError extends BasicEnum {
     }
 
     /**
-     * Write XML error, end document and close()
+     * Write XML error, end document and close().
      * 
-     * @param integer $id error id
-     * @param string $msg error message
-     * @param array $attrib error attributes array
+     * @param integer $id Error id
+     * @param string $msg Error message
+     * @param array $attrib Error attributes array
      */
     static function endError($id, $msg = '', $attrib = array()) {
         static::error($id, $msg, $attrib);
@@ -162,6 +172,8 @@ abstract class APIError extends BasicEnum {
 
 /**
  * End XML document and exit.
+ * 
+ * @global mysqli $dblink
  * @package Variables
  */
 function close() {

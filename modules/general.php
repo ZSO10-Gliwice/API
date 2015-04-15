@@ -1,4 +1,9 @@
 <?php
+/**
+ * General module
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
 
 /* 
  * Copyleft (ↄ) 2015 Marek Pikuła
@@ -17,20 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** General class extends Module */
 require_once 'module.php';
 
+/**
+ * General module
+ * 
+ * Handles essential request attributes and holds most of global constants.
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
 class General extends Module {
     
-    public function exec() {
+    /**
+     * Attribute checks
+     * 
+     * Constructor checks for `client` and `version` attributes and sets
+     * corresponding `$settings`.
+     */
+    public function __construct() {
         /** Check for client attribute and if it's valid */
         if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
             errorAttribNotValid('client', 'android');
         }
 
-        /**
-         * Check for version attribute and for beta version – it's unstable,
-         * so any API inconsistance is user fault.
-         */
+        /** Check for version attribute and for beta version – it's unstable,
+         * so any API inconsistance is user fault. */
         if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
             //check if client version is up to date
             if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
@@ -39,7 +56,12 @@ class General extends Module {
             }
         }
     }
-
+    
+    /**
+     * @global mysqli $dblink
+     * @param string $name Name of settings entry
+     * @param string $value Value of settings entry
+     */
     public static function db_settings($name, $value) {
         switch ($name) {
             case 'default_timezone':
@@ -66,18 +88,20 @@ class General extends Module {
 
 }
 
+/**
+ * Error for General module
+ * 
+ * @see General General module
+ * @see APIError Basic error
+ */
 class GeneralError extends APIError {
     
     const mid = ModuleList::general;
     
-    /** Database error      */
-    const db           = 1;
-    /** Attribute not found */
-    const noAttr       = 2;
-    /** Attribute not valid */
-    const attrNotValid = 3;
-    /** Nothing to show     */
-    const nothing      = 4;
+    const db           = 1;  /** Database error      */
+    const noAttr       = 2;  /** Attribute not found */
+    const attrNotValid = 3;  /** Attribute not valid */
+    const nothing      = 4;  /** Nothing to show     */
     
     static protected function getDefaultMessage($id, $attribs = array()) {
         parent::getDefaultMessage($id, $attribs);
@@ -115,6 +139,7 @@ class GeneralError extends APIError {
      * Write XML endError for given mysqli errno and error message.
      * 
      * @see GeneralError::endError()
+     * @global mysqli $dblink
      */
     static public function dbError() {
         global $dblink;

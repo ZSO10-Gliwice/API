@@ -1,6 +1,6 @@
 <?php
 /**
- * Basic XML tags class.
+ * Basic XML tags class
  * 
  * @author Marek Pikuła <marpirk@gmail.com>
  */
@@ -23,7 +23,7 @@
  */
 
 /**
- * Basic XML tag handler.
+ * Basic XML tag handler
  */
 abstract class XML {
     
@@ -74,6 +74,14 @@ abstract class XML {
         }
     }
     
+    /**
+     * Write debug tag.
+     * 
+     * For example: _&lt;dbg attr="fsad"&gt;Message&lt;/dbg&gt;_
+     * 
+     * @param string $msg Debug message
+     * @param array $attrib Tag attribute array
+     */
     static function debug($msg, $attrib = array()) {
         echo '<dbg';
         foreach ($attrib as $name => $value) {

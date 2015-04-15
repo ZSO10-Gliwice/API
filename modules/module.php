@@ -1,6 +1,6 @@
 <?php
 /**
- * Base module class.
+ * Base module class
  * 
  * @author Marek Pikuła <marpirk@gmail.com>
  */
@@ -22,22 +22,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** Attribute checking required for inherited methods of Module */
 require_once __DIR__ . '/../lib/attribs.php';
 
+/**
+ * Abstract module parent class
+ */
 abstract class Module {
     
+    /**
+     * Array of settings
+     * 
+     * In form `$name => $value`
+     * @var array
+     */
     public static $settings;
     
+    /**
+     * Database settings handler
+     * 
+     * Executed by `db_settings.php` on beginning. Saves values from settings
+     * table to `$settings`.
+     * 
+     * @param string $name Name of settings entry
+     * @param string $value Value of settings entry
+     * @see static::$settings Settings container
+     */
     public abstract static function db_settings($name, $value);
-    public abstract function exec();
     
 }
 
+/** Enum needed for ModuleList */
 require_once __DIR__ . '/../lib/enum.php';
 
+/**
+ * Enum list of available modules
+ * 
+ * @todo Get from DB
+ */
 abstract class ModuleList extends BasicEnum {
     
-    const general = 0;
-    const lucky = 1;
+    const general = 0;  /** General module       */
+    const lucky = 1;    /** Lucky numbers module */
     
 }

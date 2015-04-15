@@ -25,8 +25,18 @@
 //TORETHINK after making server side generator – it basically ok, but some
 //          things may change
 
+/** Lucky class extends Module */
 require_once 'module.php';
 
+/**
+ * Lucky numbers module
+ * 
+ * Lucky numbers are in Polish _Szczęśliwe Numerki_. Every school day at the
+ * beginning of day two numbers are ruffled. People with those numbers
+ * in class register, cannot be asked by teacher during lesson.
+ * 
+ * @author Marek Pikuła <marpirk@gmail.com>
+ */
 class Lucky extends Module {
     
     public static $settings = array(
@@ -35,6 +45,12 @@ class Lucky extends Module {
         'limit' => 0
     );
     
+    /**
+     * Main Lucky number API engine
+     * 
+     * @todo Optimize and split
+     * @global mysqli $dblink
+     */
     public function __construct() {
         /** Used for range based select */
         if (checkAttrib('range', false)) {
@@ -62,23 +78,7 @@ class Lucky extends Module {
                         array('attribute' => 'limit'));
             }
         }
-    }
-    
-    public static function db_settings($name, $value) {
-        switch ($name) {
-            case 'api_sort':
-                /** If lucky module should sort MySQL table */
-                Lucky::$settings['sort'] = $value; break;
-
-            case 'api_limit':
-                /** Limit of records to get from db */
-                Lucky::$settings['limit'] = $value; break;
-
-            default: break;
-        }
-    }
-
-    public function exec() {
+        
         /** Database query */
         $query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
 
@@ -137,17 +137,33 @@ class Lucky extends Module {
     }
     
     /**
+     * @param string $name Name of settings entry
+     * @param string $value Value of settings entry
+     */
+    public static function db_settings($name, $value) {
+        switch ($name) {
+            case 'api_sort':
+                /** If lucky module should sort MySQL table */
+                Lucky::$settings['sort'] = $value; break;
+
+            case 'api_limit':
+                /** Limit of records to get from db */
+                Lucky::$settings['limit'] = $value; break;
+
+            default: break;
+        }
+    }
+    
+    /**
      * Validate if given date is in right format to prevent from SQL injection.
      * 
-     * Date should be in format 'Y-m-d'. If it's not parse endError is thrown.
+     * Date should be in format `Y-m-d`. If it's not `endError` is thrown.
      * 
-     * @param string $date date to validate
-     * @return boolean if valid
+     * @param string $date Date to validate
+     * @return boolean If valid
      * 
      * @see GeneralError::endError()
      * @see GeneralError::parse
-     * 
-     * @package Modules\Lucky
      */
     protected static function validate_date($date) {
         $date_arr = explode('-', $date);
@@ -162,12 +178,18 @@ class Lucky extends Module {
 
 }
 
+/**
+ * Error for Lucky module
+ * 
+ * @see Lucky Lucky module
+ * @see APIError Basic error
+ */
 class LuckyError extends APIError {
     
     const mid = ModuleList::lucky;
     
-    const dateFormat = 1;
-    const limit = 2;
+    const dateFormat = 1; /** Date format invalid */
+    const limit = 2;      /** Exceeded limit of request length */
     
     static protected function getDefaultMessage($id, $attribs = array()) {
         parent::getDefaultMessage($id, $attribs);
@@ -182,6 +204,12 @@ class LuckyError extends APIError {
     
     static protected function validateAttributesArray($id, $arr) {
         parent::validateAttributesArray($id, $arr);
+        
+        if (($id == self::dateFormat) && (!array_key_exists('wrong', $arr))) {
+            static::errorRuntimeError($id, true, 'wrong');
+        } else if (($id == self::limit) && (!array_key_exists('limit', $arr))) {
+            static::errorRuntimeError($id, true, 'limit');
+        }
     }
     
 }
