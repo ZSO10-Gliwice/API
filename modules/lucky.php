@@ -25,7 +25,7 @@
 //TORETHINK after making server side generator – it basically ok, but some
 //          things may change
 
-require_once __DIR__ . '/../lib/module.php';
+require_once 'module.php';
 
 class Lucky extends Module {
     
