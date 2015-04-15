@@ -40,9 +40,9 @@ $table_settings = \Config\DB\table_prefix . 'settings';
 $table_modules = \Config\DB\table_prefix . 'modules';
 
 $query = 'SELECT ' . $table_modules . '.module_name, ' . $table_settings . '.name, ' . $table_settings . '.value '
-        . 'FROM ' . $table_settings . ' '
-        . 'INNER JOIN ' . $table_modules . ' '
-        . 'ON ' . $table_settings . '.module=' . $table_modules . '.id';
+       . 'FROM ' . $table_settings . ' '
+       . 'INNER JOIN ' . $table_modules . ' '
+       . 'ON ' . $table_settings . '.module=' . $table_modules . '.id';
 
 /** @var $result mysqli_result Result of query */
 $result = $dblink->query($query) or APIError::dbError();
@@ -50,44 +50,8 @@ $result = $dblink->query($query) or APIError::dbError();
 /** Get constants from database */
 while ($row = $result->fetch_assoc()) {
     switch ($row['module_name']) {
-        case 'general':
-            switch ($row['name']) {
-                case 'default_timezone':
-                    date_default_timezone_set($row['value']); break;
-
-                //Versions
-                case 'version_android':
-                    /** Current version of Android app fetched from DB
-                     * @package Constants */
-                    define('Config\Version\Client\Android', $row['value']); break;
-                case 'version_api':
-                    if ($row['value'] != \Config\Version\API) {
-                        $dblink->query('UPDATE ' . $table_settings . ' '
-                                . 'SET value="' . \Config\Version\API . '" '
-                                . 'WHERE name="version_api"')
-                                or APIError::dbError();
-                    }
-                    break;
-                
-                default: break;
-            }
-            break;
-        
-        case 'lucky':
-            switch ($row['name']) {
-                case 'sort':
-                    /** If lucky module should sort MySQL table
-                     * @package Constants */
-                    define('Config\Modules\Lucky\Sort', $row['value']); break;
-
-                case 'limit':
-                    /** Limit of records to get from db
-                     * @package Constants */
-                    define('Config\Modules\Lucky\Limit', $row['value']); break;
-                    
-                default: break;
-            }
-            break;
+        case 'general': General::db_settings($row['name'], $row['value']); break;
+        case 'lucky': Lucky::db_settings($row['name'], $row['value']); break;
 
         default: break;
     }

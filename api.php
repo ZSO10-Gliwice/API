@@ -25,6 +25,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** It has to be first, because of $settings */
+require_once 'modules/general.php';
 /** Configuration is needed for database access */
 require_once 'config.php';
 /** Variables contain needed functions and constants */
@@ -33,33 +35,30 @@ require_once 'lib/attribs.php';
 require_once 'lib/xml_tags.php';
 /** Errors are essential part of API handling */
 require_once 'lib/error.php';
+
+function __autoload($class_name) {
+    $file = 'modules/' . strtolower($class_name) . '.php';
+    if (file_exists($file)) {
+        include $file;
+    }
+}
+
 /** Settings gotten from database */
 require_once 'lib/db_settings.php';
 
 XML::openAPIIfNotOpened();
 
-/** Check for client attribute and if it's valid */
-if ((checkAttrib('client')) && (strcasecmp(filter_input(INPUT_GET, 'client'), 'android') != 0)) {
-    errorAttribNotValid('client', 'android');
-}
-
-/**
- * Check for version attribute and for beta version – it's unstable,
- * so any API inconsistance is user fault.
- */
-if ((checkAttrib('version')) && (strcasecmp(filter_input(INPUT_GET, 'version'), 'beta') != 0)) {
-    //check if client version is up to date
-    if ((strcasecmp(filter_input(INPUT_GET, 'client'), 'android') == 0)         //check for Android version
-            && (filter_input(INPUT_GET, 'version') != Config\Version\Client\Android)) {
-        errorAttribNotValid('version', Config\Version\Client\Android);
-    }
-}
+$general = new General();
+$general->exec();
 
 /** Check for module attribute */
 if (checkAttrib('module')) {
     //check if attribute is valid and if so, include it
     switch (filter_input(INPUT_GET, 'module')) {
-        case "lucky": include 'modules/lucky.php'; break;
+        case "lucky":
+            $lucky = new Lucky();
+            $lucky->exec();
+            break;
 
         default: errorAttribNotValid('module', 'lucky'); break;  //error if module name was not found
     }

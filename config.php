@@ -22,16 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Version constants
- * 
- * @author Marek Pikuła <marpirk@gmail.com>
- * @package Constants
- */
-namespace Config\Version {
+namespace {
     
     /** API current version fetched from DB */
-    define('Config\Version\API', '0.0.2');
+    General::$settings['Version\API'] = '0.0.2';
     
 }
 

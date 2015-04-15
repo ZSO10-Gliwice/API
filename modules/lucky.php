@@ -25,102 +25,126 @@
 //TORETHINK after making server side generator – it basically ok, but some
 //          things may change
 
-/** Database query */
-$query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
+require_once __DIR__ . '/../lib/module.php';
 
-/** Used for range based select */
-$range = false;
-if (checkAttrib('range', false)) {
-    $range = filter_input(INPUT_GET, 'range');
-}
-
-/**
- * Validate if given date is in right format to prevent from SQL injection.
- * 
- * Date should be in format 'Y-m-d'. If it's not parse endError is thrown.
- * 
- * @param string $date date to validate
- * @return boolean if valid
- * 
- * @see APIError::endError()
- * @see APIError::parse
- * 
- * @package Modules\Lucky
- */
-function validate_date($date) {
-    $date_arr = explode('-', $date);
-    if (count($date_arr) != 3 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
-        APIError::endError(APIError::parse, 'Wrong date format for date "' . $date . '"',
-                            array('valid' => 'Y-m-d', 'wrong' => $date));
+class Lucky extends Module {
+    
+    public static $settings = array(
+        'range' => false,
+        'sort'  => 0,
+        'limit' => 0
+    );
+    
+    public function __construct() {
+        /** Used for range based select */
+        if (checkAttrib('range', false)) {
+            Lucky::$settings['range'] = filter_input(INPUT_GET, 'range');
+        }
+        
+        /** Sorting */
+        if (checkAttrib('sort', false)) {
+            $tmp = filter_input(INPUT_GET, 'sort');
+            if ($tmp == 0 || $tmp == -1 || $tmp == 1) {
+                Lucky::$settings['sort'] = $tmp;
+            } else {
+                APIError::endError(APIError::attrNotValid,
+                        'sort value should be -1, 0, or 1', array('attribute' => 'sort'));
+            }
+        }
     }
-    return $date;
-}
+    
+    public static function db_settings($name, $value) {
+        switch ($name) {
+            case 'api_sort':
+                /** If lucky module should sort MySQL table */
+                Lucky::$settings['sort'] = $value; break;
 
-/**
- * Date ranges.
- */
-$from_date;
-$to_date;
-if ($range) {
-    if (checkAttrib('date', false)) { //present for range from 'date' to now
-        $from_date = validate_date(filter_input(INPUT_GET, 'date'));
-        $to_date = date('Y-m-d');
-    } else if (checkAttrib('date1', false) && checkAttrib('date2', false)) { //present for range from 'date1' to 'date2'
-        $from_date = validate_date(filter_input(INPUT_GET, 'date1'));
-        $to_date = validate_date(filter_input(INPUT_GET, 'date2'));
-    } else {
-        APIError::endError(APIError::noAttr, 'No date or date1/date2 for date range');
+            case 'api_limit':
+                /** Limit of records to get from db */
+                Lucky::$settings['limit'] = $value; break;
+
+            default: break;
+        }
     }
-    $query .= ' WHERE date BETWEEN "' . $from_date . '" AND "' . $to_date . '"';
-} else if (checkAttrib('date', false) && !$range) {  //filter exact date
-    $query .= ' WHERE date="' . validate_date(filter_input(INPUT_GET, 'date')) . '"';
-}
 
-/**
- * Sorting
- */
-$sort = \Config\Modules\Lucky\Sort;
-if (checkAttrib('sort', false)) {
-    $tmp = filter_input(INPUT_GET, 'sort');
-    if ($tmp == '0' || $tmp == '-1' || $tmp == '1') {
-        $sort = $tmp;
-    } else {
-        APIError::endError(APIError::attrNotValid,
-                'sort value should be -1, 0, or 1', array('attribute' => 'sort'));
+    public function exec() {
+        /** Database query */
+        $query = 'SELECT * FROM ' . \Config\DB\table_prefix . 'lucky';
+
+        /** Date ranges */
+        if (Lucky::$settings['range']) {
+            if (checkAttrib('date', false)) { //present for range from 'date' to now
+                $from_date = Lucky::validate_date(filter_input(INPUT_GET, 'date'));
+                $to_date = date('Y-m-d');
+            } else if (checkAttrib('date1', false) && checkAttrib('date2', false)) { //present for range from 'date1' to 'date2'
+                $from_date = Lucky::validate_date(filter_input(INPUT_GET, 'date1'));
+                $to_date = Lucky::validate_date(filter_input(INPUT_GET, 'date2'));
+            } else {
+                APIError::endError(APIError::noAttr, 'No date or date1/date2 '
+                                                . 'attributes for date range');
+            }
+            $query .= ' WHERE date'
+                    . ' BETWEEN "' . $from_date . '" AND "' . $to_date . '"';
+        } else if (checkAttrib('date', false)) { //filter exact date
+            $query .= ' WHERE date="' . Lucky::validate_date(filter_input(INPUT_GET, 'date')) . '"';
+        }
+
+        if (Lucky::$settings['sort'] == '1') {
+            $query .= ' ORDER BY date ASC';
+        } else if (Lucky::$settings['sort'] == '-1') {
+            $query .= ' ORDER BY date DESC';
+        }
+
+        if (Lucky::$settings['limit'] != '0') {
+            $query .= ' LIMIT ' . (Lucky::$settings['limit'] + 1);
+        }
+
+        /** @var $result mysqli_result Result of MySQL query */
+        global $dblink;
+        $result = $dblink->query($query) or APIError::dbError();
+
+        $i = 0; /** Coutner of dates */
+        /** Final print of numbers data as XML */
+        while ($row = $result->fetch_assoc()) {
+            if (Lucky::$settings['limit'] != '0' && $i == Lucky::$settings['limit']) {
+                /** @todo Chaaange in future */
+                APIError::endError(APIError::parse, 'Limit of db records exceeded!',
+                        array('type' => 'limit', 'limit' => Lucky::$settings['limit']));
+            }
+            echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
+            $i++;
+        }
+
+        /**
+         * If no numbers were printed throw nothing to show error.
+         * 
+         * @see APIError::nothing
+         */
+        if ($i == 0) {
+            APIError::endError(APIError::nothing);
+        }
     }
-}
-
-if ($sort == '1') {
-    $query .= ' ORDER BY date ASC';
-} else if ($sort == '-1') {
-    $query .= ' ORDER BY date DESC';
-}
-
-if (defined('LUCKY_LIMIT') && \Config\Modules\Lucky\Limit != '0') {
-    $limit = \Config\Modules\Lucky\Limit;
-    $query .= ' LIMIT ' . ($limit + 1);
-}
-
-/** @var $result mysqli_result Result of MySQL query */
-$result = $dblink->query($query) or APIError::dbError();
-
-$i = 0; /** Coutner of dates */
-/** Final print of numbers data as XML */
-while ($row = $result->fetch_assoc()) {
-    if (isset($limit) && $i == $limit) {
-        /** @todo Chaaange in future */
-        APIError::endError(APIError::parse, 'Limit of db records exceeded!',
-                array('type' => 'limit', 'limit' => $limit));
+    
+    /**
+     * Validate if given date is in right format to prevent from SQL injection.
+     * 
+     * Date should be in format 'Y-m-d'. If it's not parse endError is thrown.
+     * 
+     * @param string $date date to validate
+     * @return boolean if valid
+     * 
+     * @see APIError::endError()
+     * @see APIError::parse
+     * 
+     * @package Modules\Lucky
+     */
+    protected static function validate_date($date) {
+        $date_arr = explode('-', $date);
+        if (count($date_arr) != 3 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
+            APIError::endError(APIError::parse, 'Wrong date format for date "' . $date . '"',
+                                array('valid' => 'Y-m-d', 'wrong' => $date));
+        }
+        return $date;
     }
-    echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
-    $i++;
-}
 
-/**
- * If no numbers were printed throw nothing to show error.
- * 
- * @see APIError::nothing
- */
-if ($i == 0) {
-    APIError::endError(APIError::nothing);
 }

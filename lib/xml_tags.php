@@ -58,8 +58,8 @@ abstract class XML {
         self::openIfNotOpened();
         
         echo '<api';
-        if (defined('Config\Version\API')) {
-            echo ' version="' . \Config\Version\API . '"';
+        if (isset(General::$settings['Version\API'])) {
+            echo ' version="' . General::$settings['Version\API'] . '"';
         }
         echo '>';
         self::$APIOpened = true;
@@ -72,6 +72,14 @@ abstract class XML {
         if (!self::$APIOpened) {
             self::openAPI();
         }
+    }
+    
+    static function debug($msg, $attrib = array()) {
+        echo '<dbg';
+        foreach ($attrib as $name => $value) {
+            echo ' ' . $name . '="' . $value . '"';
+        }
+        echo '>' . $msg . '</dbg>';
     }
     
     /**
