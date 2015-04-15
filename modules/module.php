@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'attribs.php';
+require_once __DIR__ . '/../lib/attribs.php';
 
 abstract class Module {
     
@@ -30,5 +30,14 @@ abstract class Module {
     
     public abstract static function db_settings($name, $value);
     public abstract function exec();
+    
+}
+
+require_once __DIR__ . '/../lib/enum.php';
+
+abstract class ModuleList extends BasicEnum {
+    
+    const general = 0;
+    const lucky = 1;
     
 }

@@ -31,7 +31,7 @@ $dblink = new mysqli(\Config\DB\host, \Config\DB\user, \Config\DB\password,
                      \Config\DB\database, \Config\DB\port);
 /** Handle connection error */
 if ($dblink->connect_errno) {
-    APIError::dbError();
+    GeneralError::dbError();
 }
 
 /** @var $table_settings string Settgins table name */
@@ -45,7 +45,7 @@ $query = 'SELECT ' . $table_modules . '.module_name, ' . $table_settings . '.nam
        . 'ON ' . $table_settings . '.module=' . $table_modules . '.id';
 
 /** @var $result mysqli_result Result of query */
-$result = $dblink->query($query) or APIError::dbError();
+$result = $dblink->query($query) or GeneralError::dbError();
 
 /** Get constants from database */
 while ($row = $result->fetch_assoc()) {

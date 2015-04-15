@@ -47,8 +47,19 @@ class Lucky extends Module {
             if ($tmp == 0 || $tmp == -1 || $tmp == 1) {
                 Lucky::$settings['sort'] = $tmp;
             } else {
-                APIError::endError(APIError::attrNotValid,
-                        'sort value should be -1, 0, or 1', array('attribute' => 'sort'));
+                GeneralError::endError(GeneralError::attrNotValid,
+                        'sort value should be -1, 0, or 1',
+                        array('attribute' => 'sort'));
+            }
+        }
+        
+        if (checkAttrib('limit', false)) {
+            if (intval(filter_input(INPUT_GET, 'limit')) >= 0) {
+                Lucky::$settings['limit'] = filter_input(INPUT_GET, 'limit');
+            } else {
+                GeneralError::endError(GeneralError::attrNotValid,
+                        'Limit value should be greater or equal 0',
+                        array('attribute' => 'limit'));
             }
         }
     }
@@ -80,8 +91,8 @@ class Lucky extends Module {
                 $from_date = Lucky::validate_date(filter_input(INPUT_GET, 'date1'));
                 $to_date = Lucky::validate_date(filter_input(INPUT_GET, 'date2'));
             } else {
-                APIError::endError(APIError::noAttr, 'No date or date1/date2 '
-                                                . 'attributes for date range');
+                GeneralError::endError(GeneralError::noAttr,
+                        'No date or date1/date2 attributes for date range');
             }
             $query .= ' WHERE date'
                     . ' BETWEEN "' . $from_date . '" AND "' . $to_date . '"';
@@ -101,27 +112,27 @@ class Lucky extends Module {
 
         /** @var $result mysqli_result Result of MySQL query */
         global $dblink;
-        $result = $dblink->query($query) or APIError::dbError();
+        $result = $dblink->query($query) or GeneralError::dbError();
 
         $i = 0; /** Coutner of dates */
         /** Final print of numbers data as XML */
         while ($row = $result->fetch_assoc()) {
             if (Lucky::$settings['limit'] != '0' && $i == Lucky::$settings['limit']) {
                 /** @todo Chaaange in future */
-                APIError::endError(APIError::parse, 'Limit of db records exceeded!',
-                        array('type' => 'limit', 'limit' => Lucky::$settings['limit']));
+                LuckyError::endError(LuckyError::limit, '',
+                        array('limit' => Lucky::$settings['limit']));
             }
             echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
             $i++;
         }
-
+        
         /**
          * If no numbers were printed throw nothing to show error.
          * 
-         * @see APIError::nothing
+         * @see GeneralError::nothing
          */
         if ($i == 0) {
-            APIError::endError(APIError::nothing);
+            GeneralError::endError(GeneralError::nothing);
         }
     }
     
@@ -133,18 +144,44 @@ class Lucky extends Module {
      * @param string $date date to validate
      * @return boolean if valid
      * 
-     * @see APIError::endError()
-     * @see APIError::parse
+     * @see GeneralError::endError()
+     * @see GeneralError::parse
      * 
      * @package Modules\Lucky
      */
     protected static function validate_date($date) {
         $date_arr = explode('-', $date);
-        if (count($date_arr) != 3 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
-            APIError::endError(APIError::parse, 'Wrong date format for date "' . $date . '"',
-                                array('valid' => 'Y-m-d', 'wrong' => $date));
+        if (count($date_arr) != 3
+                || $date_arr[0] == '' || $date_arr[1] == '' || $date_arr[2] == ''
+                || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
+            LuckyError::endError(LuckyError::dateFormat, '',
+                    array('valid' => 'Y-m-d', 'wrong' => $date));
         }
         return $date;
     }
 
+}
+
+class LuckyError extends APIError {
+    
+    const mid = ModuleList::lucky;
+    
+    const dateFormat = 1;
+    const limit = 2;
+    
+    static protected function getDefaultMessage($id, $attribs = array()) {
+        parent::getDefaultMessage($id, $attribs);
+        switch ($id) {
+            case self::dateFormat: return 'Wrong date format for date '
+                                        . '"' . $attribs['wrong'] . '"';
+            case self::limit: return 'Limit of db records exceeded!';
+
+            default: return 'Unknown error';
+        }
+    }
+    
+    static protected function validateAttributesArray($id, $arr) {
+        parent::validateAttributesArray($id, $arr);
+    }
+    
 }

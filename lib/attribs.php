@@ -39,7 +39,7 @@ function checkAttrib($name, $exec_error = true) {
         return true;
     } else {
         if ($exec_error) {
-            APIError::error(APIError::noAttr, '', array('attribute' => $name));
+            GeneralError::error(GeneralError::noAttr, '', array('attribute' => $name));
         }
         return false;
     }
@@ -59,5 +59,5 @@ function errorAttribNotValid($attrib, $valid = '', $msg = '') {
     if ($valid != '') {
         $attributes['valid'] = $valid;
     }
-    APIError::error(APIError::attrNotValid, $msg, $attributes);
+    GeneralError::error(GeneralError::attrNotValid, $msg, $attributes);
 }

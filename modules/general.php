@@ -56,7 +56,7 @@ class General extends Module {
                     $dblink->query('UPDATE ' . \Config\DB\table_prefix . 'settings '
                             . 'SET value="' . self::$settings['Version\API'] . '" '
                             . 'WHERE name="version_api"')
-                            or APIError::dbError();
+                            or static::dbError();
                 }
                 break;
 
@@ -64,4 +64,61 @@ class General extends Module {
         }
     }
 
+}
+
+class GeneralError extends APIError {
+    
+    const mid = ModuleList::general;
+    
+    /** Database error      */
+    const db           = 1;
+    /** Attribute not found */
+    const noAttr       = 2;
+    /** Attribute not valid */
+    const attrNotValid = 3;
+    /** Nothing to show     */
+    const nothing      = 4;
+    
+    static protected function getDefaultMessage($id, $attribs = array()) {
+        parent::getDefaultMessage($id, $attribs);
+        switch ($id) {
+            case self::db:      return 'Database error';
+            case self::noAttr:  return 'Attribute "' . $attribs['attribute'] . '" not found';
+            case self::attrNotValid:
+                $msg = 'Attribute "' . $attribs['attribute'] . '" not valid';
+                if (array_key_exists('valid', $attribs)) { //yeah too many nested, but making awful oneliner would be worse
+                    $msg .= ' (valid value: "' . $attribs['valid'] . '")';
+                }
+                return $msg;
+            case self::nothing: return 'Nothing to show';
+            
+            default: return 'Unknown error';
+        }
+    }
+    
+    static protected function validateAttributesArray($id, $arr) {   
+        parent::validateAttributesArray($id, $arr);
+        
+        /** Checks for error ids */
+        if (($id == self::db) && (!array_key_exists('db_errno', $arr))) {
+            static::errorRuntimeError($id, true, 'db_errno');
+        } else if ((($id == self::noAttr) || ($id == self::attrNotValid))
+                    && (!array_key_exists('attribute', $arr))) {
+            static::errorRuntimeError($id, true, 'attribute');
+        } else if (!self::isValidValue($id)) {
+            static::runtimeError('Unknown error id: ' . $id,
+                                 array('error_id' => $id));
+        }
+    }
+    
+    /**
+     * Write XML endError for given mysqli errno and error message.
+     * 
+     * @see GeneralError::endError()
+     */
+    static public function dbError() {
+        global $dblink;
+        static::endError(self::db, $dblink->error, array('db_errno' => $dblink->errno));
+    }
+    
 }
