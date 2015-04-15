@@ -22,6 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace {
+    
+    /** API current version fetched from DB */
+    General::$settings['Version\API'] = '0.0.2';
+    
+}
+
 /**
  * Basic database configuration constants
  * 

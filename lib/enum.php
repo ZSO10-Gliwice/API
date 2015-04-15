@@ -30,12 +30,12 @@
  */
 abstract class BasicEnum {
     
-    /** Cached array of constants */
+    /** @var array|null Cached array of constants */
     private static $constCacheArray = NULL;
 
     /**
      * Get list of constants
-     * @return array array of constants
+     * @return array Array of constants
      */
     private static function getConstants() {
         if (self::$constCacheArray == NULL) {
@@ -52,9 +52,9 @@ abstract class BasicEnum {
     /**
      * Check if given const name is present in class.
      * 
-     * @param string $name constant name
-     * @param boolean $strict if name should be checked case sensitive
-     * @return boolean if enum name exists
+     * @param string $name Constant name
+     * @param boolean $strict If name should be checked case sensitive
+     * @return boolean If enum name exists
      */
     public static function isValidName($name, $strict = false) {
         $constants = self::getConstants();
@@ -68,10 +68,10 @@ abstract class BasicEnum {
     }
 
     /**
-     * Check if given value is represented by some constant
+     * Check if given value is represented by some constant.
      * 
-     * @param integer $value enum value
-     * @return boolean if enum value exists
+     * @param integer $value Enum value
+     * @return boolean If enum value exists
      */
     public static function isValidValue($value) {
         $values = array_values(self::getConstants());
@@ -79,10 +79,10 @@ abstract class BasicEnum {
     }
 
     /**
-     * Get name of enum from given value
+     * Get name of enum from given value.
      * 
-     * @param integer $value enum value
-     * @return string|null enum name or NULL if value not present
+     * @param integer $value Enum value
+     * @return string|null Enum name or NULL if value not present
      */
     public static function getName($value) {
         $constants = self::getConstants();
@@ -97,10 +97,10 @@ abstract class BasicEnum {
     }
 
     /**
-     * Get value from given enum name
+     * Get value from given enum name.
      * 
-     * @param string $name enum name
-     * @return integer|null enum value or NULL if name not present
+     * @param string $name Enum name
+     * @return integer|null Enum value or NULL if name not present
      */
     public static function getValue($name) {
         $constants = self::getConstants();
