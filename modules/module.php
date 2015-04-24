@@ -30,13 +30,30 @@ require_once __DIR__ . '/../lib/attribs.php';
  */
 abstract class Module {
     
+    /** Module id
+     * @see ModuleList */
+    const mid = 0;
+    
     /**
      * Array of settings
      * 
      * In form `$name => $value`
      * @var array
      */
-    public static $settings;
+    public static $settings = [];
+    
+    /**
+     * @var array Array of set by db setings
+     */
+    protected static $db_set = [];
+    
+    /**
+     * Array of mandatory db settings.
+     * 
+     * Set by child.
+     * @var type 
+     */
+    protected static $db_mandatory = [];
     
     /**
      * Database settings handler
@@ -48,7 +65,30 @@ abstract class Module {
      * @param string $value Value of settings entry
      * @see static::$settings Settings container
      */
-    public abstract static function db_settings($name, $value);
+    public static function db_settings($name, $value) {
+        static::$db_set[] = $name;
+    }
+    
+    /**
+     * Checks if all needed db settings was set.
+     */
+    public static function db_settings_check() {
+        $bad = [];
+        foreach (static::$db_mandatory as $name) {
+            if (!in_array($name, static::$db_set)) {
+                $bad[] = $name;
+            }
+        }
+        if (sizeof($bad) != 0) {
+            $msg = 'Database doesn\'t contain mandatory settings of module '
+                    . ModuleList::getName(static::mid) . ': ';
+            foreach ($bad as $name) {
+                $msg .= $name . ', ';
+            }
+            substr($msg, 0, -2);
+            GeneralError::runtimeError($msg);
+        }
+    }
     
 }
 

@@ -39,11 +39,18 @@ require_once 'module.php';
  */
 class Lucky extends Module {
     
-    public static $settings = array(
+    const mid = 2;
+    
+    public static $settings = [
         'range' => false,
         'sort'  => 0,
         'limit' => 0
-    );
+    ];
+    
+    protected static $db_mandatory = [
+        'api_sort',
+        'api_limit'
+    ];
     
     /**
      * Main Lucky number API engine
@@ -65,7 +72,7 @@ class Lucky extends Module {
             } else {
                 GeneralError::endError(GeneralError::attrNotValid,
                         'sort value should be -1, 0, or 1',
-                        array('attribute' => 'sort'));
+                        ['attribute' => 'sort']);
             }
         }
         
@@ -75,7 +82,7 @@ class Lucky extends Module {
             } else {
                 GeneralError::endError(GeneralError::attrNotValid,
                         'Limit value should be greater or equal 0',
-                        array('attribute' => 'limit'));
+                        ['attribute' => 'limit']);
             }
         }
         
@@ -120,7 +127,7 @@ class Lucky extends Module {
             if (Lucky::$settings['limit'] != '0' && $i == Lucky::$settings['limit']) {
                 /** @todo Chaaange in future */
                 LuckyError::endError(LuckyError::limit, '',
-                        array('limit' => Lucky::$settings['limit']));
+                        ['limit' => Lucky::$settings['limit']]);
             }
             echo '<lucky date="' . $row['date'] . '">' . $row['numbers'] . '</lucky>';
             $i++;
@@ -171,7 +178,7 @@ class Lucky extends Module {
                 || $date_arr[0] == '' || $date_arr[1] == '' || $date_arr[2] == ''
                 || !checkdate($date_arr[1], $date_arr[2], $date_arr[0])) {
             LuckyError::endError(LuckyError::dateFormat, '',
-                    array('valid' => 'Y-m-d', 'wrong' => $date));
+                    ['valid' => 'Y-m-d', 'wrong' => $date]);
         }
         return $date;
     }
@@ -191,7 +198,7 @@ class LuckyError extends APIError {
     const dateFormat = 1; /** Date format invalid */
     const limit = 2;      /** Exceeded limit of request length */
     
-    static protected function getDefaultMessage($id, $attribs = array()) {
+    static protected function getDefaultMessage($id, $attribs = []) {
         parent::getDefaultMessage($id, $attribs);
         switch ($id) {
             case self::dateFormat: return 'Wrong date format for date '

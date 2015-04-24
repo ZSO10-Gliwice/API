@@ -34,6 +34,13 @@ require_once 'module.php';
  */
 class General extends Module {
     
+    const mid = 1;
+    
+    protected static $db_mandatory = [
+        'default_timezone',
+        'version_android'
+    ];
+    
     /**
      * Attribute checks
      * 
@@ -103,7 +110,7 @@ class GeneralError extends APIError {
     const attrNotValid = 3;  /** Attribute not valid */
     const nothing      = 4;  /** Nothing to show     */
     
-    static protected function getDefaultMessage($id, $attribs = array()) {
+    static protected function getDefaultMessage($id, $attribs = []) {
         parent::getDefaultMessage($id, $attribs);
         switch ($id) {
             case self::db:      return 'Database error';
@@ -120,7 +127,7 @@ class GeneralError extends APIError {
         }
     }
     
-    static protected function validateAttributesArray($id, $arr) {   
+    static protected function validateAttributesArray($id, $arr) {
         parent::validateAttributesArray($id, $arr);
         
         /** Checks for error ids */
@@ -131,7 +138,7 @@ class GeneralError extends APIError {
             static::errorRuntimeError($id, true, 'attribute');
         } else if (!self::isValidValue($id)) {
             static::runtimeError('Unknown error id: ' . $id,
-                                 array('error_id' => $id));
+                                 ['error_id' => $id]);
         }
     }
     
@@ -143,7 +150,7 @@ class GeneralError extends APIError {
      */
     static public function dbError() {
         global $dblink;
-        static::endError(self::db, $dblink->error, array('db_errno' => $dblink->errno));
+        static::endError(self::db, $dblink->error, ['db_errno' => $dblink->errno]);
     }
     
 }

@@ -3,23 +3,7 @@
  * API error handler
  * 
  * @author Marek Pikuła <marpirk@gmail.com>
- */
-
-/* 
- * Copyleft (ↄ) 2015 Marek Pikuła
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * @copyright © 2015, Marek Pikuła
  */
 
 /** Enum is used as APIError parent */
@@ -40,7 +24,7 @@ abstract class APIError extends BasicEnum {
     const mid = 0;
     
     /** Runtime error */
-    const runtime = 1;
+    const runtime = 0;
     
     /**
      * Generate default message for given error.
@@ -55,7 +39,7 @@ abstract class APIError extends BasicEnum {
      * @param array $attribs Array of attributes
      * @return string Default message
      */
-    static protected function getDefaultMessage($id, $attribs = array()) {
+    static protected function getDefaultMessage($id, $attribs = []) {
         if ($id == static::runtime) {
             return 'Runtime error! This should never happen! '
                  . 'Please get in touch with developers.';
@@ -102,7 +86,7 @@ abstract class APIError extends BasicEnum {
      * @param string $msg Error message (if '' default error message is used as message)
      * @param array $attribs Array of attributes to include to XML tag
      */
-    static public function error($id, $msg = '', $attribs = array()) {
+    static public function error($id, $msg = '', $attribs = []) {
         static::validateAttributesArray($id, $attribs);
         
         XML::openAPIIfNotOpened();
@@ -139,8 +123,8 @@ abstract class APIError extends BasicEnum {
             $msg .= 'not ';
         }
         $msg .= 'contain "' . $problem_attrib . '" argument!';
-        static::runtimeError($msg, array('error_id' => $id,
-                                        'problem_attrib' => $problem_attrib));
+        static::runtimeError($msg, ['error_id' => $id,
+                                    'problem_attrib' => $problem_attrib]);
     }
     
     /**
@@ -150,7 +134,7 @@ abstract class APIError extends BasicEnum {
      * @param array $args Array of additional error arguments
      * @see GeneralError::endError()
      */
-    static public function runtimeError($msg, $args = array()) {
+    static public function runtimeError($msg, $args = []) {
         static::endError(self::runtime,
                          $msg . ' ' . static::getDefaultMessage(self::runtime),
                          $args);
@@ -163,7 +147,7 @@ abstract class APIError extends BasicEnum {
      * @param string $msg Error message
      * @param array $attrib Error attributes array
      */
-    static function endError($id, $msg = '', $attrib = array()) {
+    static function endError($id, $msg = '', $attrib = []) {
         static::error($id, $msg, $attrib);
         close();
     }
