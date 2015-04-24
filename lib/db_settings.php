@@ -4,23 +4,7 @@
  * 
  * @todo Check if all constants were created
  * @author Marek Pikuła <marpirk@gmail.com>
- */
-
-/* 
- * Copyleft (ↄ) 2015 Marek Pikuła
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * @copyright © 2015, Marek Pikuła
  */
 
 /** Errors are required for DB errors handling */
@@ -40,7 +24,9 @@ $table_settings = \Config\DB\table_prefix . 'settings';
 $table_modules = \Config\DB\table_prefix . 'modules';
 
 /** @var $query Database query */
-$query = 'SELECT ' . $table_modules . '.module_name, ' . $table_settings . '.name, ' . $table_settings . '.value '
+$query = 'SELECT ' . $table_modules . '.module_name, '
+       . $table_settings . '.name, '
+       . $table_settings . '.value '
        . 'FROM ' . $table_settings . ' '
        . 'INNER JOIN ' . $table_modules . ' '
        . 'ON ' . $table_settings . '.module=' . $table_modules . '.id';
@@ -59,4 +45,7 @@ while ($row = $result->fetch_assoc()) {
 
         default: break;
     }
+    
+    General::db_settings_check();
+    Lucky::db_settings_check();
 }
